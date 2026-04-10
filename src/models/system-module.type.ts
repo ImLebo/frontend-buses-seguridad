@@ -1,0 +1,10 @@
+export type SystemModule =
+  | 'USERS'
+  | 'ROLES'
+  | 'PERMISSIONS'
+  | 'BUSES'
+  | 'ROUTES'
+  | 'SCHEDULES'
+  | 'REPORTS'
+  | 'INCIDENTS'
+  | 'MASS_MESSAGING'
