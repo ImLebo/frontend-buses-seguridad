@@ -1,14 +1,15 @@
-import { useState } from 'react'
-import './App.css'
+import { MainLayout } from './components/layout';
+import { AppContextProvider } from './context/AppContext';
+import { UsersPage } from './pages';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-
-    </>
-  )
+    <AppContextProvider value={{ appName: 'User Management Platform' }}>
+      <MainLayout>
+        <UsersPage />
+      </MainLayout>
+    </AppContextProvider>
+  );
 }
 
-export default App
+export default App;

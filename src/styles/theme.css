@@ -1,0 +1,12 @@
+@theme {
+  --font-sans: 'Space Grotesk', 'Segoe UI', sans-serif;
+
+  --color-brand-50: #f2f7ff;
+  --color-brand-100: #dbe9ff;
+  --color-brand-300: #8eb8ff;
+  --color-brand-500: #2563eb;
+  --color-brand-700: #1d4ed8;
+
+  --color-surface: #ffffff;
+  --color-app-bg: #f8fafc;
+}

@@ -1,0 +1,287 @@
+{
+  "info": {
+    "_postman_id": "f8a9b921-3b58-48ad-a4a4-c4e0b4ab7c31",
+    "name": "ms-security",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8181" },
+    { "key": "token", "value": "REEMPLAZAR_CON_JWT" },
+    { "key": "id", "value": "REEMPLAZAR_ID" },
+    { "key": "userId", "value": "REEMPLAZAR_USER_ID" },
+    { "key": "profileId", "value": "REEMPLAZAR_PROFILE_ID" },
+    { "key": "sessionId", "value": "REEMPLAZAR_SESSION_ID" },
+    { "key": "roleId", "value": "REEMPLAZAR_ROLE_ID" },
+    { "key": "userRoleId", "value": "REEMPLAZAR_USER_ROLE_ID" },
+    { "key": "permissionId", "value": "REEMPLAZAR_PERMISSION_ID" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{token}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "Security",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@demo.com\",\n  \"password\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/security/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        { "name": "Get All Users", "request": { "method": "GET", "url": "{{baseUrl}}/users" } },
+        { "name": "Get User By Id", "request": { "method": "GET", "url": "{{baseUrl}}/users/{{id}}" } },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Usuario Demo\",\n  \"email\": \"user@demo.com\",\n  \"password\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Usuario Actualizado\",\n  \"email\": \"user.updated@demo.com\",\n  \"password\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/users/{{id}}"
+          }
+        },
+        { "name": "Delete User", "request": { "method": "DELETE", "url": "{{baseUrl}}/users/{{id}}" } },
+        { "name": "Add User Profile", "request": { "method": "POST", "url": "{{baseUrl}}/users/{{userId}}/profile/{{profileId}}" } },
+        { "name": "Delete User Profile", "request": { "method": "DELETE", "url": "{{baseUrl}}/users/{{userId}}/profile/{{profileId}}" } },
+        { "name": "Add User Session", "request": { "method": "POST", "url": "{{baseUrl}}/users/{{userId}}/session/{{sessionId}}" } },
+        { "name": "Delete User Session", "request": { "method": "DELETE", "url": "{{baseUrl}}/users/{{userId}}/session/{{sessionId}}" } }
+      ]
+    },
+    {
+      "name": "Profiles",
+      "item": [
+        { "name": "Get All Profiles", "request": { "method": "GET", "url": "{{baseUrl}}/profiles" } },
+        { "name": "Get Profile By Id", "request": { "method": "GET", "url": "{{baseUrl}}/profiles/{{id}}" } },
+        {
+          "name": "Create Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"3001234567\",\n  \"photo\": \"https://example.com/photo.png\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/profiles"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"3007654321\",\n  \"photo\": \"https://example.com/photo-updated.png\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/profiles/{{id}}"
+          }
+        },
+        { "name": "Delete Profile", "request": { "method": "DELETE", "url": "{{baseUrl}}/profiles/{{id}}" } }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        { "name": "Get All Roles", "request": { "method": "GET", "url": "{{baseUrl}}/roles" } },
+        { "name": "Get Role By Id", "request": { "method": "GET", "url": "{{baseUrl}}/roles/{{id}}" } },
+        {
+          "name": "Create Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ADMIN\",\n  \"description\": \"Rol administrador\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/roles"
+          }
+        },
+        {
+          "name": "Update Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"SUPERVISOR\",\n  \"description\": \"Rol supervisor\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/roles/{{id}}"
+          }
+        },
+        { "name": "Delete Role", "request": { "method": "DELETE", "url": "{{baseUrl}}/roles/{{id}}" } }
+      ]
+    },
+    {
+      "name": "Permissions",
+      "item": [
+        { "name": "Get All Permissions", "request": { "method": "GET", "url": "{{baseUrl}}/permissions" } },
+        { "name": "Get Permission By Id", "request": { "method": "GET", "url": "{{baseUrl}}/permissions/{{permissionId}}" } },
+        {
+          "name": "Create Permission",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"/users\",\n  \"method\": \"GET\",\n  \"model\": \"User\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/permissions"
+          }
+        },
+        {
+          "name": "Update Permission",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"/roles\",\n  \"method\": \"POST\",\n  \"model\": \"Role\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/permissions/{{permissionId}}"
+          }
+        },
+        { "name": "Delete Permission", "request": { "method": "DELETE", "url": "{{baseUrl}}/permissions/{{permissionId}}" } }
+      ]
+    },
+    {
+      "name": "Sessions",
+      "item": [
+        { "name": "Get All Sessions", "request": { "method": "GET", "url": "{{baseUrl}}/sessions" } },
+        { "name": "Get Session By Id", "request": { "method": "GET", "url": "{{baseUrl}}/sessions/{{id}}" } },
+        {
+          "name": "Create Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"TOKEN_X\",\n  \"expiration\": \"2026-12-31T23:59:59.000+00:00\",\n  \"code2FA\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/sessions"
+          }
+        },
+        {
+          "name": "Update Session",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"TOKEN_Y\",\n  \"expiration\": \"2027-01-31T23:59:59.000+00:00\",\n  \"code2FA\": \"654321\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/sessions/{{id}}"
+          }
+        },
+        { "name": "Delete Session", "request": { "method": "DELETE", "url": "{{baseUrl}}/sessions/{{id}}" } }
+      ]
+    },
+    {
+      "name": "Role Permissions",
+      "item": [
+        { "name": "Get All RolePermissions", "request": { "method": "GET", "url": "{{baseUrl}}/role-permissions" } },
+        { "name": "Get RolePermission By Id", "request": { "method": "GET", "url": "{{baseUrl}}/role-permissions/{{id}}" } },
+        {
+          "name": "Create RolePermission",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": { \"id\": \"{{roleId}}\" },\n  \"permission\": { \"id\": \"{{permissionId}}\" }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/role-permissions"
+          }
+        },
+        {
+          "name": "Update RolePermission",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": { \"id\": \"{{roleId}}\" },\n  \"permission\": { \"id\": \"{{permissionId}}\" }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/role-permissions/{{id}}"
+          }
+        },
+        { "name": "Delete RolePermission", "request": { "method": "DELETE", "url": "{{baseUrl}}/role-permissions/{{id}}" } }
+      ]
+    },
+    {
+      "name": "User Role",
+      "item": [
+        { "name": "Add User Role", "request": { "method": "POST", "url": "{{baseUrl}}/user-role/user/{{userId}}/role/{{roleId}}" } },
+        { "name": "Remove User Role", "request": { "method": "DELETE", "url": "{{baseUrl}}/user-role/{{userRoleId}}" } }
+      ]
+    }
+  ]
+}
+

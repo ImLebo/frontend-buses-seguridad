@@ -1,75 +1,106 @@
-# React + TypeScript + Vite
+# Sistema UI CRUD Reutilizable
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto implementa un sistema de componentes genéricos para operaciones CRUD, orientado a escalabilidad y reutilización en cualquier entidad del dominio.
 
-Currently, two official plugins are available:
+## Objetivo de arquitectura
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Diseñar componentes independientes de entidad.
+- Configurar UI mediante `props` y `schemas`.
+- Centralizar estilos con tokens para mantener consistencia visual.
+- Garantizar accesibilidad, responsividad y estados UX claros.
 
-## React Compiler
+## Estructura principal
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- `context.md`: definición formal del sistema de diseño (colores, tipografía, spacing, interacción y principios UX/UI).
+- `src/components/ui/types.ts`: contratos tipados para formularios, tabla y buscador.
+- `src/components/ui/GenericForm.tsx`: formulario dinámico con validación.
+- `src/components/ui/DataTable.tsx`: tabla configurable con acciones por fila.
+- `src/components/ui/SearchBar.tsx`: búsqueda con debounce y botón de limpieza.
+- `src/components/ui/index.ts`: exportaciones centralizadas del kit UI.
+- `src/index.css`: design tokens y estilos reutilizables.
+- `src/App.tsx`: demostración de integración end-to-end del sistema.
 
-Note: This will impact Vite dev & build performances.
+## Decisiones de diseño y UX
 
-## Expanding the ESLint configuration
+- El sistema visual utiliza tokens CSS para colores, tipografías, radios, sombras y espaciado.
+- La jerarquía visual prioriza claridad: encabezado contextual, formularios legibles y tabla con acciones directas.
+- Los estados de interacción están estandarizados: `hover`, `focus`, `active`, `disabled`, `loading`, `empty`, `error`.
+- En móvil, la tabla degrada a tarjetas para preservar legibilidad y acción rápida.
+- Se mantiene semántica HTML y navegación por teclado en entradas y acciones.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Uso rápido
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
+### 1. Definir campos de formulario
+
+```ts
+const fields: FormFieldConfig[] = [
+  { name: 'name', label: 'Nombre', type: 'text', required: true },
   {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
+    name: 'status',
+    label: 'Estado',
+    type: 'select',
+    required: true,
+    options: [
+      { label: 'Activo', value: 'Active' },
+      { label: 'Inactivo', value: 'Inactive' },
     ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
   },
-])
+];
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Renderizar formulario genérico
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```tsx
+<GenericForm
+  fields={fields}
+  onSubmit={async (values) => {
+    // Persistencia en API o estado global
+  }}
+/>
 ```
+
+### 3. Definir columnas y acciones de tabla
+
+```ts
+const columns: TableColumn<MyEntity>[] = [
+  { key: 'id', header: 'ID' },
+  { key: 'name', header: 'Nombre' },
+  { key: 'createdAt', header: 'Creado', render: (row) => formatDate(row.createdAt) },
+];
+```
+
+```tsx
+<DataTable
+  data={rows}
+  columns={columns}
+  getRowId={(row) => row.id}
+  actions={[
+    { label: 'Ver', onClick: handleView },
+    { label: 'Editar', variant: 'secondary', onClick: handleEdit },
+    { label: 'Eliminar', variant: 'danger', onClick: handleDelete },
+  ]}
+/>
+```
+
+### 4. Integrar búsqueda optimizada
+
+```tsx
+<SearchBar
+  value={query}
+  onSearch={setQuery}
+  placeholder="Buscar registros"
+  debounceMs={350}
+/>
+```
+
+## Escalabilidad recomendada
+
+- Conectar `GenericForm` a un motor de validación adicional por módulo cuando existan reglas complejas.
+- Integrar `DataTable` con paginación server-side y carga incremental (`lazy loading`).
+- Mantener nuevos componentes sobre los mismos tokens para evitar deriva visual.
+
+## Scripts
+
+- `npm run dev`: servidor local.
+- `npm run build`: build de producción y validación de tipos.
+- `npm run lint`: validación estática.
