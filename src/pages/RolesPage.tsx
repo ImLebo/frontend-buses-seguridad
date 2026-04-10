@@ -1,18 +1,17 @@
 import { useState } from 'react';
-import { UserForm } from '../components/users/UserForm';
-import { UserTable } from '../components/users/UserTable';
+import { RoleForm, RoleTable } from '../components/roles';
 import { Button, Card, ConfirmDialog, Modal } from '../components/ui';
-import { useUsers } from '../hooks/useUsers';
-import type { CreateUserInput, User } from '../types';
+import { useRoles } from '../hooks/useRoles';
+import type { CreateRoleInput, Role } from '../types';
 
-export const UsersPage = () => {
-  const { data, loading, error, create, update, remove } = useUsers();
+export const RolesPage = () => {
+  const { data, loading, error, create, update, remove } = useRoles();
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [mode, setMode] = useState<'create' | 'edit'>('create');
-  const [selected, setSelected] = useState<User | null>(null);
+  const [selected, setSelected] = useState<Role | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Role | null>(null);
 
   const openCreate = () => {
     setSelected(null);
@@ -20,7 +19,7 @@ export const UsersPage = () => {
     setFormOpen(true);
   };
 
-  const openEdit = (item: User) => {
+  const openEdit = (item: Role) => {
     setSelected(item);
     setMode('edit');
     setFormOpen(true);
@@ -30,21 +29,18 @@ export const UsersPage = () => {
     if (submitting) {
       return;
     }
-
     setFormOpen(false);
     setSelected(null);
   };
 
-  const handleSubmit = async (values: CreateUserInput) => {
+  const handleSubmit = async (values: CreateRoleInput) => {
     setSubmitting(true);
-
     try {
       if (mode === 'create') {
         await create(values);
       } else if (selected) {
         await update({ ...selected, ...values });
       }
-
       closeForm();
     } finally {
       setSubmitting(false);
@@ -55,7 +51,6 @@ export const UsersPage = () => {
     if (!deleteTarget) {
       return;
     }
-
     await remove(deleteTarget.id);
     setDeleteTarget(null);
   };
@@ -64,22 +59,22 @@ export const UsersPage = () => {
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">Users</h2>
-          <p className="text-sm text-slate-600">CRUD completo de usuarios.</p>
+          <h2 className="text-xl font-semibold text-slate-900">Roles</h2>
+          <p className="text-sm text-slate-600">CRUD completo de roles.</p>
         </div>
         <Button onClick={openCreate} type="button">
-          Crear user
+          Crear rol
         </Button>
       </div>
 
       {error ? <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
 
       <Card>
-        <UserTable data={data} loading={loading} onDelete={setDeleteTarget} onEdit={openEdit} />
+        <RoleTable data={data} loading={loading} onDelete={setDeleteTarget} onEdit={openEdit} />
       </Card>
 
-      <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear user' : 'Editar user'}>
-        <UserForm
+      <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear rol' : 'Editar rol'}>
+        <RoleForm
           key={selected?.id ?? 'create'}
           initialValues={selected ?? undefined}
           mode={mode}
@@ -92,7 +87,7 @@ export const UsersPage = () => {
       <ConfirmDialog
         confirmLabel="Eliminar"
         isOpen={Boolean(deleteTarget)}
-        message="Esta accion eliminara el usuario de forma permanente."
+        message="Esta accion eliminara el rol de forma permanente."
         onCancel={() => setDeleteTarget(null)}
         onConfirm={() => void confirmDelete()}
         title="Confirmar eliminacion"

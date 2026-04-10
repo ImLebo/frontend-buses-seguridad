@@ -11,10 +11,10 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, Pr
 }
 
 const variantClassMap: Record<ButtonVariant, string> = {
-  primary: 'bg-slate-900 text-white hover:bg-slate-800 focus-visible:ring-slate-500',
-  secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-200 focus-visible:ring-slate-400',
-  danger: 'bg-red-600 text-white hover:bg-red-500 focus-visible:ring-red-400',
-  ghost: 'bg-transparent text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-400',
+  primary: 'bg-primary text-white shadow-sm hover:-translate-y-0.5 hover:bg-primary-700 hover:shadow-md focus-visible:ring-primary',
+  secondary: 'bg-secondary text-white shadow-sm hover:-translate-y-0.5 hover:bg-teal-700 hover:shadow-md focus-visible:ring-secondary',
+  danger: 'bg-red-700 text-white shadow-sm hover:-translate-y-0.5 hover:bg-red-800 hover:shadow-md focus-visible:ring-red-700',
+  ghost: 'bg-transparent text-text-secondary hover:bg-slate-100 focus-visible:ring-accent',
 };
 
 const sizeClassMap: Record<ButtonSize, string> = {
@@ -35,7 +35,7 @@ export const Button = ({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+        'inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
         variantClassMap[variant],
         sizeClassMap[size],
         className,

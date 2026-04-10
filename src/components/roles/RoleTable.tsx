@@ -1,42 +1,30 @@
 import { Button, Table, type TableColumn } from '../ui';
-import type { User } from '../../types';
+import type { Role } from '../../types';
 
-interface UserTableProps {
-  data: User[];
+interface RoleTableProps {
+  data: Role[];
   loading: boolean;
-  onEdit: (item: User) => void;
-  onDelete: (item: User) => void;
+  onEdit: (item: Role) => void;
+  onDelete: (item: Role) => void;
 }
 
-const LoadingRows = () => {
-  return (
-    <div className="rounded-lg border border-slate-200 p-4">
-      <div className="animate-pulse space-y-3">
-        <div className="h-8 rounded bg-slate-100" />
-        <div className="h-8 rounded bg-slate-100" />
-        <div className="h-8 rounded bg-slate-100" />
-      </div>
-    </div>
-  );
-};
-
-export const UserTable = ({ data, loading, onEdit, onDelete }: UserTableProps) => {
-  const columns: TableColumn<User>[] = [
+export const RoleTable = ({ data, loading, onEdit, onDelete }: RoleTableProps) => {
+  const columns: TableColumn<Role>[] = [
     { key: 'name', header: 'Nombre' },
-    { key: 'email', header: 'Email' },
+    { key: 'description', header: 'Descripcion' },
     {
       key: 'actions',
       header: 'Acciones',
       className: 'text-right',
-      render: (user) => (
+      render: (item) => (
         <div className="flex justify-end gap-2">
-          <Button onClick={() => onEdit(user)} size="sm" type="button" variant="ghost">
+          <Button onClick={() => onEdit(item)} size="sm" type="button" variant="ghost">
             <span className="inline-flex items-center gap-1.5">
               <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M14.69 2.86a1.5 1.5 0 0 1 2.12 2.12l-8.48 8.49-3.3.7.7-3.3 8.48-8.5Z" /></svg>
               Editar
             </span>
           </Button>
-          <Button onClick={() => onDelete(user)} size="sm" type="button" variant="danger">
+          <Button onClick={() => onDelete(item)} size="sm" type="button" variant="danger">
             <span className="inline-flex items-center gap-1.5">
               <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 0 0-1 1v1H4.5a.5.5 0 0 0 0 1h.54l.76 10.18A2 2 0 0 0 7.8 17h4.4a2 2 0 0 0 1.99-1.82L14.95 5h.55a.5.5 0 1 0 0-1H13V3a1 1 0 0 0-1-1H8Zm1 2V3h2v1H9Z" /></svg>
               Eliminar
@@ -48,8 +36,8 @@ export const UserTable = ({ data, loading, onEdit, onDelete }: UserTableProps) =
   ];
 
   if (loading) {
-    return <LoadingRows />;
+    return <div className="rounded-lg border border-slate-200 p-4 text-sm text-slate-500">Cargando roles...</div>;
   }
 
-  return <Table columns={columns} data={data} emptyMessage="No hay usuarios registrados." rowKey={(row) => row.id} />;
+  return <Table columns={columns} data={data} emptyMessage="No hay roles registrados." rowKey={(row) => row.id} />;
 };

@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react';
+import { useState, type PropsWithChildren } from 'react';
 import { Navbar } from './Navbar';
 import { Sidebar, type NavItem } from './Sidebar';
 
@@ -13,12 +13,19 @@ const defaultItems: NavItem[] = [
 ];
 
 export const MainLayout = ({ children, navItems = defaultItems }: MainLayoutProps) => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <Navbar />
-      <div className="mx-auto flex max-w-7xl flex-col md:flex-row">
-        <Sidebar items={navItems} />
-        <main className="flex-1 p-4 sm:p-6">{children}</main>
+    <div className="min-h-screen bg-background text-text-primary">
+      <div className="flex min-h-screen">
+        <Sidebar isOpen={isSidebarOpen} items={navItems} onClose={() => setSidebarOpen(false)} />
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Navbar onMenuClick={() => setSidebarOpen((previous) => !previous)} />
+          <main className="flex-1 p-6 lg:p-8">
+            <div className="mx-auto w-full max-w-7xl">{children}</div>
+          </main>
+        </div>
       </div>
     </div>
   );

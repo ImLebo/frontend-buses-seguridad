@@ -1,12 +1,16 @@
 @theme {
-  --font-sans: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-sans: 'IBM Plex Sans', 'Segoe UI', sans-serif;
 
-  --color-brand-50: #f2f7ff;
-  --color-brand-100: #dbe9ff;
-  --color-brand-300: #8eb8ff;
-  --color-brand-500: #2563eb;
-  --color-brand-700: #1d4ed8;
+  --color-primary: #1e3a8a;
+  --color-primary-700: #1e40af;
+  --color-secondary: #0f766e;
+  --color-accent: #64748b;
 
   --color-surface: #ffffff;
-  --color-app-bg: #f8fafc;
+  --color-background: #f8fafc;
+  --color-border: #e2e8f0;
+
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
 }

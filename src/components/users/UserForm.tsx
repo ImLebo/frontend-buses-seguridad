@@ -1,72 +1,62 @@
 import { useMemo, useState, type FormEvent } from 'react';
-import type { UserFormValues, UserStatus } from '../../types';
+import type { CreateUserInput, User } from '../../types';
 import { Button, Input } from '../ui';
 
 interface UserFormProps {
   mode: 'create' | 'edit';
-  initialValues?: UserFormValues;
+  initialValues?: User;
   submitting?: boolean;
-  onCancel?: () => void;
-  onSubmit: (values: UserFormValues) => Promise<void> | void;
+  onSubmit: (values: CreateUserInput) => Promise<void> | void;
+  onCancel: () => void;
 }
 
-const roleOptions = ['admin', 'operator', 'viewer'];
-const statusOptions: UserStatus[] = ['active', 'inactive'];
-
-const defaultValues: UserFormValues = {
-  name: '',
-  email: '',
-  role: 'viewer',
-  status: 'active',
+const isValidEmail = (value: string): boolean => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 };
 
-const isValidEmail = (email: string): boolean => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
+export const UserForm = ({ mode, initialValues, submitting = false, onSubmit, onCancel }: UserFormProps) => {
+  const [values, setValues] = useState<CreateUserInput>({
+    name: initialValues?.name ?? '',
+    email: initialValues?.email ?? '',
+    password: '',
+  });
 
-export const UserForm = ({ mode, initialValues = defaultValues, submitting = false, onCancel, onSubmit }: UserFormProps) => {
-  const [values, setValues] = useState<UserFormValues>(initialValues);
-  const [touched, setTouched] = useState<Record<keyof UserFormValues, boolean>>({
+  const [touched, setTouched] = useState({
     name: false,
     email: false,
-    role: false,
-    status: false,
+    password: false,
   });
 
   const errors = useMemo(() => {
     return {
       name: values.name.trim() ? '' : 'El nombre es obligatorio.',
-      email: !values.email.trim() ? 'El correo es obligatorio.' : isValidEmail(values.email) ? '' : 'Ingresa un correo valido.',
-      role: values.role.trim() ? '' : 'El rol es obligatorio.',
-      status: values.status ? '' : 'El estado es obligatorio.',
-    } satisfies Record<keyof UserFormValues, string>;
-  }, [values]);
+      email: !values.email.trim()
+        ? 'El correo es obligatorio.'
+        : isValidEmail(values.email)
+          ? ''
+          : 'Ingresa un correo valido.',
+      password:
+        mode === 'create' && !values.password?.trim()
+          ? 'La contrasena es obligatoria en creacion.'
+          : '',
+    };
+  }, [mode, values]);
 
-  const isValid = Object.values(errors).every((value) => value.length === 0);
-
-  const updateField = <K extends keyof UserFormValues>(key: K, value: UserFormValues[K]) => {
-    setValues((previous) => ({ ...previous, [key]: value }));
-  };
-
-  const handleBlur = (key: keyof UserFormValues) => {
-    setTouched((previous) => ({ ...previous, [key]: true }));
-  };
+  const isValid = Object.values(errors).every((error) => error.length === 0);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    setTouched({
-      name: true,
-      email: true,
-      role: true,
-      status: true,
-    });
+    setTouched({ name: true, email: true, password: true });
 
     if (!isValid) {
       return;
     }
 
-    await onSubmit(values);
+    await onSubmit({
+      name: values.name.trim(),
+      email: values.email.trim(),
+      password: values.password?.trim() || undefined,
+    });
   };
 
   return (
@@ -75,59 +65,34 @@ export const UserForm = ({ mode, initialValues = defaultValues, submitting = fal
         error={touched.name ? errors.name : undefined}
         id="user-name"
         label="Nombre"
-        onBlur={() => handleBlur('name')}
-        onChange={(event) => updateField('name', event.target.value)}
+        onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
+        onChange={(event) => setValues((prev) => ({ ...prev, name: event.target.value }))}
         placeholder="Nombre completo"
         value={values.name}
       />
+
       <Input
         error={touched.email ? errors.email : undefined}
         id="user-email"
-        label="Correo"
-        onBlur={() => handleBlur('email')}
-        onChange={(event) => updateField('email', event.target.value)}
-        placeholder="correo@empresa.com"
+        label="Email"
+        onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
+        onChange={(event) => setValues((prev) => ({ ...prev, email: event.target.value }))}
+        placeholder="usuario@empresa.com"
         type="email"
         value={values.email}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="space-y-1.5 text-sm font-medium text-slate-700" htmlFor="user-role">
-          Rol
-          <select
-            className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
-            id="user-role"
-            onBlur={() => handleBlur('role')}
-            onChange={(event) => updateField('role', event.target.value)}
-            value={values.role}
-          >
-            {roleOptions.map((role) => (
-              <option key={role} value={role}>
-                {role}
-              </option>
-            ))}
-          </select>
-          {touched.role && errors.role ? <p className="text-sm text-red-600">{errors.role}</p> : null}
-        </label>
-
-        <label className="space-y-1.5 text-sm font-medium text-slate-700" htmlFor="user-status">
-          Estado
-          <select
-            className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
-            id="user-status"
-            onBlur={() => handleBlur('status')}
-            onChange={(event) => updateField('status', event.target.value as UserStatus)}
-            value={values.status}
-          >
-            {statusOptions.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-          {touched.status && errors.status ? <p className="text-sm text-red-600">{errors.status}</p> : null}
-        </label>
-      </div>
+      <Input
+        error={touched.password ? errors.password : undefined}
+        helperText={mode === 'edit' ? 'Deja este campo vacio para mantener la contrasena actual.' : undefined}
+        id="user-password"
+        label="Contrasena"
+        onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
+        onChange={(event) => setValues((prev) => ({ ...prev, password: event.target.value }))}
+        placeholder={mode === 'create' ? 'Contrasena de acceso' : 'Nueva contrasena (opcional)'}
+        type="password"
+        value={values.password ?? ''}
+      />
 
       <div className="flex justify-end gap-2">
         <Button onClick={onCancel} type="button" variant="ghost">

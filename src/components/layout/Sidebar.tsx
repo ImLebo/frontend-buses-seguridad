@@ -8,29 +8,53 @@ export interface NavItem {
 
 interface SidebarProps {
   items: NavItem[];
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export const Sidebar = ({ items }: SidebarProps) => {
+export const Sidebar = ({ items, isOpen = false, onClose }: SidebarProps) => {
   return (
-    <aside className="w-full border-b border-slate-200 bg-white p-4 md:h-full md:w-64 md:border-b-0 md:border-r">
-      <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Navegacion</p>
-      <nav>
-        <ul className="space-y-1">
-          {items.map((item) => (
-            <li key={item.id}>
-              <button
-                className={cn(
-                  'w-full rounded-lg px-3 py-2 text-left text-sm transition-colors',
-                  item.active ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100',
-                )}
-                type="button"
-              >
-                {item.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </aside>
+    <>
+      <div
+        className={cn(
+          'fixed inset-0 z-30 bg-slate-950/40 transition-opacity md:hidden',
+          isOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
+        )}
+        onClick={onClose}
+      />
+
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-40 w-72 border-r border-blue-900/50 bg-primary px-4 py-5 text-slate-100 transition-transform duration-200 md:static md:translate-x-0',
+          isOpen ? 'translate-x-0' : '-translate-x-full',
+        )}
+      >
+        <div className="mb-6 border-b border-blue-800/60 pb-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-200">Navegacion</p>
+          <p className="mt-2 text-sm text-blue-100">Panel administrativo corporativo</p>
+        </div>
+
+        <nav>
+          <ul className="space-y-1.5">
+            {items.map((item) => (
+              <li key={item.id}>
+                <button
+                  className={cn(
+                    'flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition-all duration-200',
+                    item.active
+                      ? 'bg-white/12 text-white shadow-sm'
+                      : 'text-blue-100/90 hover:bg-white/10 hover:text-white',
+                  )}
+                  type="button"
+                >
+                  <span className="inline-flex h-2 w-2 rounded-full bg-secondary" />
+                  {item.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
+    </>
   );
 };

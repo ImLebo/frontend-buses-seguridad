@@ -16,12 +16,15 @@ interface TableProps<T> {
 
 export const Table = <T,>({ data, columns, rowKey, emptyMessage = 'Sin datos para mostrar.' }: TableProps<T>) => {
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-200">
+    <div className="overflow-x-auto rounded-2xl border border-border bg-white">
       <table className="min-w-full border-collapse">
-        <thead className="bg-slate-50">
+        <thead className="bg-slate-100/80">
           <tr>
             {columns.map((column) => (
-              <th key={String(column.key)} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
+              <th
+                key={String(column.key)}
+                className={`px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-secondary ${column.className ?? ''}`}
+              >
                 {column.header}
               </th>
             ))}
@@ -30,15 +33,15 @@ export const Table = <T,>({ data, columns, rowKey, emptyMessage = 'Sin datos par
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td className="px-4 py-8 text-center text-sm text-slate-500" colSpan={columns.length}>
+              <td className="px-5 py-10 text-center text-sm text-text-muted" colSpan={columns.length}>
                 {emptyMessage}
               </td>
             </tr>
           ) : (
             data.map((row) => (
-              <tr className="border-t border-slate-200 hover:bg-slate-50" key={rowKey(row)}>
+              <tr className="border-t border-border transition-colors duration-200 hover:bg-slate-50/90" key={rowKey(row)}>
                 {columns.map((column) => (
-                  <td className="px-4 py-3 text-sm text-slate-700" key={String(column.key)}>
+                  <td className={`px-5 py-3.5 text-sm text-text-secondary ${column.className ?? ''}`} key={String(column.key)}>
                     {column.render ? column.render(row) : String(row[column.key as keyof T] ?? '')}
                   </td>
                 ))}

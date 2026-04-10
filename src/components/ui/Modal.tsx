@@ -15,10 +15,18 @@ export const Modal = ({ isOpen, title, onClose, className, children }: ModalProp
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4">
-      <div className={cn('w-full max-w-xl rounded-xl bg-white p-5 shadow-xl', className)} role="dialog" aria-modal="true" aria-label={title}>
-        <header className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
+      <div
+        className={cn(
+          'w-full max-w-xl rounded-2xl border border-border bg-white p-6 shadow-2xl transition-all duration-200',
+          className,
+        )}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+      >
+        <header className="mb-5 flex items-center justify-between border-b border-border pb-3">
+          <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
           <Button aria-label="Cerrar modal" onClick={onClose} size="sm" variant="ghost" type="button">
             Cerrar
           </Button>

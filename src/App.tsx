@@ -1,12 +1,12 @@
 import { MainLayout } from './components/layout';
 import { AppContextProvider } from './context/AppContext';
-import { UsersPage } from './pages';
+import { SecurityCrudPage } from './pages/SecurityCrudPage';
 
 function App() {
   return (
     <AppContextProvider value={{ appName: 'User Management Platform' }}>
       <MainLayout>
-        <UsersPage />
+        <SecurityCrudPage />
       </MainLayout>
     </AppContextProvider>
   );
