@@ -21,9 +21,9 @@ export const PermissionForm = ({ mode, initialValues, submitting = false, onSubm
 
   const errors = useMemo(() => {
     return {
-      url: values.url.trim() ? '' : 'La URL es obligatoria.',
-      method: values.method.trim() ? '' : 'El metodo es obligatorio.',
-      model: values.model.trim() ? '' : 'El modelo es obligatorio.',
+      url: values.url?.trim() ? '' : 'La URL es obligatoria.',
+      method: values.method?.trim() ? '' : 'El metodo es obligatorio.',
+      model: values.model?.trim() ? '' : 'El modelo es obligatorio.',
     };
   }, [values]);
 
@@ -38,9 +38,9 @@ export const PermissionForm = ({ mode, initialValues, submitting = false, onSubm
     }
 
     await onSubmit({
-      url: values.url.trim(),
-      method: values.method.trim().toUpperCase(),
-      model: values.model.trim(),
+      url: values.url?.trim() ?? '',
+      method: values.method?.trim().toUpperCase() ?? 'GET',
+      model: values.model?.trim() ?? '',
     });
   };
 
