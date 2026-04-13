@@ -187,7 +187,7 @@ export const UsersPage = () => {
         </div>
       </Card>
 
-      <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear usuario' : 'Editar usuario'}>
+      <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear usuario' : 'Editar usuario'} size="md">
         <UserForm
           key={selected?.id ?? 'create'}
           initialValues={selected ?? undefined}
@@ -198,9 +198,9 @@ export const UsersPage = () => {
         />
       </Modal>
 
-      <Modal isOpen={isRoleModalOpen} onClose={() => setIsRoleModalOpen(false)} title="Asignar Roles">
+      <Modal isOpen={isRoleModalOpen} onClose={() => setIsRoleModalOpen(false)} title="Asignar Roles" size="md">
         {selectedUserForRoles && (
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[calc(90vh-150px)] overflow-y-auto">
             <div className="rounded-lg bg-slate-50 p-4">
               <p className="text-sm font-semibold text-slate-900">{selectedUserForRoles.name}</p>
               <p className="text-sm text-slate-600">{selectedUserForRoles.email}</p>
@@ -208,7 +208,7 @@ export const UsersPage = () => {
 
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-slate-900">Roles Disponibles</h3>
-              <div className="max-h-64 overflow-y-auto space-y-2">
+              <div className="max-h-48 overflow-y-auto space-y-2 border border-slate-200 rounded-lg p-2">
                 {roles.map((role: Role) => (
                   <label key={role.id} className="flex items-center gap-2 p-2 rounded hover:bg-slate-100 cursor-pointer">
                     <input
@@ -233,7 +233,7 @@ export const UsersPage = () => {
               <p>El usuario recibirá un email con los cambios realizados.</p>
             </div>
 
-            <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
+            <div className="flex justify-end gap-2 border-t border-slate-200 pt-4 sticky bottom-0 bg-white">
               <Button
                 onClick={() => setIsRoleModalOpen(false)}
                 type="button"

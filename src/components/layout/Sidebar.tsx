@@ -19,12 +19,12 @@ export const Sidebar = ({ items, isOpen = false, onClose }: SidebarProps) => {
 
   // Rutas por defecto si no se proporcionan items
   const defaultItems: NavItem[] = [
-    { id: 'console', label: 'Console', path: '/' },
-    { id: 'roles', label: 'Roles', path: '/roles' },
-    { id: 'permissions', label: 'Permissions', path: '/permissions' },
-    { id: 'users', label: 'Usuarios', path: '/users' },
-    { id: 'profiles', label: 'Profiles', path: '/profiles' },
-    { id: 'sessions', label: 'Sessions', path: '/sessions' },
+    { id: 'console', label: 'Console', path: '/app/' },
+    { id: 'roles', label: 'Roles', path: '/app/roles' },
+    { id: 'permissions', label: 'Permissions', path: '/app/permissions' },
+    { id: 'users', label: 'Usuarios', path: '/app/users' },
+    { id: 'profiles', label: 'Profiles', path: '/app/profiles' },
+    { id: 'sessions', label: 'Sessions', path: '/app/sessions' },
   ];
 
   const navItems = items.length > 0 ? items : defaultItems;

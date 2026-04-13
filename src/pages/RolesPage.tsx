@@ -88,7 +88,7 @@ export const RolesPage = () => {
         <RoleTable data={data} loading={loading} onDelete={setDeleteTarget} onEdit={openEdit} />
       </Card>
 
-      <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear rol' : 'Editar rol'} size="lg">
+      <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear rol' : 'Editar rol'} size="md">
         <RoleForm
           key={selected?.id ?? 'create'}
           initialValues={selected ?? undefined}

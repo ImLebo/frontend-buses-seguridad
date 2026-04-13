@@ -3,7 +3,8 @@ import { GoogleCallbackPage } from '../pages/GoogleCallbackPage';
 import { GitHubCallbackPage } from '../pages/GitHubCallbackPage';
 import { LoginPage } from '../pages/LoginPage';
 import { PrivateAppPage } from '../pages/PrivateAppPage';
-import { getSessionToken } from '../services/authService';
+import { getSessionToken, clearSessionToken } from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 
 const RequireAuth = () => {
   const token = getSessionToken();
@@ -33,7 +34,7 @@ export const AppRouter = () => {
       <Route element={<GoogleCallbackPage />} path="/auth/google/callback" />
       <Route element={<GitHubCallbackPage />} path="/auth/github/callback" />
       <Route element={<RequireAuth />}>
-        <Route element={<PrivateAppPage />} path="/app" />
+        <Route element={<PrivateAppPage />} path="/app/*" />
       </Route>
       <Route element={<Navigate replace to="/" />} path="*" />
     </Routes>
