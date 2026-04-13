@@ -13,7 +13,7 @@ export class ApiError extends Error {
 }
 
 const getToken = (): string | null => {
-  return localStorage.getItem('token') ?? localStorage.getItem('authToken');
+  return sessionStorage.getItem('token') ?? localStorage.getItem('token') ?? localStorage.getItem('authToken');
 };
 
 type RequestConfig = {
