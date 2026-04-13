@@ -4,6 +4,7 @@ import { Sidebar, type NavItem } from './Sidebar';
 
 interface MainLayoutProps extends PropsWithChildren {
   navItems?: NavItem[];
+  onLogout?: () => void;
 }
 
 const defaultItems: NavItem[] = [
@@ -12,7 +13,7 @@ const defaultItems: NavItem[] = [
   { id: 'settings', label: 'Configuracion' },
 ];
 
-export const MainLayout = ({ children, navItems = defaultItems }: MainLayoutProps) => {
+export const MainLayout = ({ children, navItems = defaultItems, onLogout }: MainLayoutProps) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -21,7 +22,7 @@ export const MainLayout = ({ children, navItems = defaultItems }: MainLayoutProp
         <Sidebar isOpen={isSidebarOpen} items={navItems} onClose={() => setSidebarOpen(false)} />
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <Navbar onMenuClick={() => setSidebarOpen((previous) => !previous)} />
+          <Navbar onLogout={onLogout} onMenuClick={() => setSidebarOpen((previous) => !previous)} />
           <main className="flex-1 p-6 lg:p-8">
             <div className="mx-auto w-full max-w-7xl">{children}</div>
           </main>

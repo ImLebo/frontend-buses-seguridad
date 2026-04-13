@@ -1,13 +1,13 @@
-import { MainLayout } from './components/layout';
+import { BrowserRouter } from 'react-router-dom';
 import { AppContextProvider } from './context/AppContext';
-import { SecurityCrudPage } from './pages/SecurityCrudPage';
+import { AppRouter } from './routers/AppRouter';
 
 function App() {
   return (
     <AppContextProvider value={{ appName: 'User Management Platform' }}>
-      <MainLayout>
-        <SecurityCrudPage />
-      </MainLayout>
+      <BrowserRouter>
+        <AppRouter />
+      </BrowserRouter>
     </AppContextProvider>
   );
 }

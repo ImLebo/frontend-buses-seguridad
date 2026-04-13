@@ -4,9 +4,10 @@ interface NavbarProps {
   title?: string;
   userName?: string;
   onMenuClick?: () => void;
+  onLogout?: () => void;
 }
 
-export const Navbar = ({ title = 'MS Security Platform', userName = 'Operador', onMenuClick }: NavbarProps) => {
+export const Navbar = ({ title = 'MS Security Platform', userName = 'Operador', onMenuClick, onLogout }: NavbarProps) => {
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-white px-4 shadow-sm sm:px-6">
       <div className="flex items-center gap-3">
@@ -27,7 +28,7 @@ export const Navbar = ({ title = 'MS Security Platform', userName = 'Operador', 
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
           {userName.charAt(0).toUpperCase()}
         </div>
-        <Button size="sm" type="button" variant="ghost">
+        <Button onClick={onLogout} size="sm" type="button" variant="ghost">
           Logout
         </Button>
       </div>
