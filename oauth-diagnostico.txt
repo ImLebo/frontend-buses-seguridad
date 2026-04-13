@@ -1,0 +1,13 @@
+===ENV=== 
+.env NO EXISTE
+===NETSTAT 8181=== 
+===GOOGLE URL ENDPOINT=== 
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0  0      0   0      0   0      0      0      0           00:01              0
+curl: (7) Failed to connect to localhost port 8181 after 1244 ms: Could not connect to server
+===ROOT=== 
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0  0      0   0      0   0      0      0      0           00:01              0
+curl: (7) Failed to connect to localhost port 8181 after 1237 ms: Could not connect to server

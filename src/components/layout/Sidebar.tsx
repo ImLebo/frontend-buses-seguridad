@@ -1,8 +1,10 @@
+import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../../utils/cn';
 
 export interface NavItem {
   id: string;
   label: string;
+  path?: string;
   active?: boolean;
 }
 
@@ -13,6 +15,20 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ items, isOpen = false, onClose }: SidebarProps) => {
+  const location = useLocation();
+
+  // Rutas por defecto si no se proporcionan items
+  const defaultItems: NavItem[] = [
+    { id: 'console', label: 'Console', path: '/' },
+    { id: 'roles', label: 'Roles', path: '/roles' },
+    { id: 'permissions', label: 'Permissions', path: '/permissions' },
+    { id: 'users', label: 'Usuarios', path: '/users' },
+    { id: 'profiles', label: 'Profiles', path: '/profiles' },
+    { id: 'sessions', label: 'Sessions', path: '/sessions' },
+  ];
+
+  const navItems = items.length > 0 ? items : defaultItems;
+
   return (
     <>
       <div
@@ -36,22 +52,28 @@ export const Sidebar = ({ items, isOpen = false, onClose }: SidebarProps) => {
 
         <nav>
           <ul className="space-y-1.5">
-            {items.map((item) => (
-              <li key={item.id}>
-                <button
-                  className={cn(
-                    'flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition-all duration-200',
-                    item.active
-                      ? 'bg-white/12 text-white shadow-sm'
-                      : 'text-blue-100/90 hover:bg-white/10 hover:text-white',
-                  )}
-                  type="button"
-                >
-                  <span className="inline-flex h-2 w-2 rounded-full bg-secondary" />
-                  {item.label}
-                </button>
-              </li>
-            ))}
+            {navItems.map((item) => {
+              const isActive = location.pathname === (item.path || `/${item.id}`);
+              const href = item.path || `/${item.id}`;
+
+              return (
+                <li key={item.id}>
+                  <Link
+                    to={href}
+                    onClick={onClose}
+                    className={cn(
+                      'flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition-all duration-200 no-underline',
+                      isActive
+                        ? 'bg-white/12 text-white shadow-sm'
+                        : 'text-blue-100/90 hover:bg-white/10 hover:text-white',
+                    )}
+                  >
+                    <span className="inline-flex h-2 w-2 rounded-full bg-secondary" />
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </aside>

@@ -104,3 +104,5 @@ const columns: TableColumn<MyEntity>[] = [
 - `npm run dev`: servidor local.
 - `npm run build`: build de producción y validación de tipos.
 - `npm run lint`: validación estática.
+
+

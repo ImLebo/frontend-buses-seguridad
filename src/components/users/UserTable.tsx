@@ -6,6 +6,7 @@ interface UserTableProps {
   loading: boolean;
   onEdit: (item: User) => void;
   onDelete: (item: User) => void;
+  onAssignRoles?: (item: User) => void;
 }
 
 const LoadingRows = () => {
@@ -20,7 +21,7 @@ const LoadingRows = () => {
   );
 };
 
-export const UserTable = ({ data, loading, onEdit, onDelete }: UserTableProps) => {
+export const UserTable = ({ data, loading, onEdit, onDelete, onAssignRoles }: UserTableProps) => {
   const columns: TableColumn<User>[] = [
     { key: 'name', header: 'Nombre' },
     { key: 'email', header: 'Email' },
@@ -30,6 +31,14 @@ export const UserTable = ({ data, loading, onEdit, onDelete }: UserTableProps) =
       className: 'text-right',
       render: (user) => (
         <div className="flex justify-end gap-2">
+          {onAssignRoles && (
+            <Button onClick={() => onAssignRoles(user)} size="sm" type="button" variant="secondary">
+              <span className="inline-flex items-center gap-1.5">
+                <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm-4 9a6 6 0 0 0-6 6v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2a6 6 0 0 0-6-6h-4zm9-1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" /></svg>
+                Roles
+              </span>
+            </Button>
+          )}
           <Button onClick={() => onEdit(user)} size="sm" type="button" variant="ghost">
             <span className="inline-flex items-center gap-1.5">
               <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M14.69 2.86a1.5 1.5 0 0 1 2.12 2.12l-8.48 8.49-3.3.7.7-3.3 8.48-8.5Z" /></svg>

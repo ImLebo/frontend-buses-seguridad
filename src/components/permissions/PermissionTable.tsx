@@ -10,9 +10,20 @@ interface PermissionTableProps {
 
 export const PermissionTable = ({ data, loading, onEdit, onDelete }: PermissionTableProps) => {
   const columns: TableColumn<Permission>[] = [
-    { key: 'url', header: 'URL' },
-    { key: 'method', header: 'Metodo' },
-    { key: 'model', header: 'Modelo' },
+    { key: 'module', header: 'Módulo' },
+    { key: 'action', header: 'Acción' },
+    { key: 'createdBy', header: 'Creado Por' },
+    {
+      key: 'isActive',
+      header: 'Activo',
+      render: (item) => (
+        <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
+          item.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+        }`}>
+          {item.isActive ? 'Sí' : 'No'}
+        </span>
+      ),
+    },
     {
       key: 'actions',
       header: 'Acciones',
@@ -38,6 +49,10 @@ export const PermissionTable = ({ data, loading, onEdit, onDelete }: PermissionT
 
   if (loading) {
     return <div className="rounded-lg border border-slate-200 p-4 text-sm text-slate-500">Cargando permisos...</div>;
+  }
+
+  if (data.length === 0) {
+    return <div className="rounded-lg border border-slate-200 p-4 text-sm text-slate-500">No hay permisos registrados.</div>;
   }
 
   return <Table columns={columns} data={data} emptyMessage="No hay permisos registrados." rowKey={(row) => row.id} />;
