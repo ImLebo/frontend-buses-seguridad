@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { PasswordRecoveryForm } from '../components/auth';
+import { PasswordRecoveryForm } from '../components/auth/PasswordRecoveryForm';
 import { usePasswordRecovery } from '../hooks/usePasswordRecovery';
 
 export const PasswordRecoveryPage = () => {
