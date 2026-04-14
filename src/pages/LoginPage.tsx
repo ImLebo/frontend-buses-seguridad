@@ -58,12 +58,12 @@ export const LoginPage = () => {
       navigate('/app', { replace: true });
     } catch (caughtError) {
       if (isApiError(caughtError)) {
-        if (caughtError.status === 400) {
-          setError(caughtError.message || 'Datos inválidos. Verifica tu información.');
-        } else if (caughtError.status === 401) {
-          setError('No se pudo validar reCAPTCHA o credenciales inválidas. Intenta de nuevo.');
+        if (caughtError.status === 401) {
+          setError('Email o contrasena incorrectos');
+        } else if (caughtError.status === 503) {
+          setError('No pudimos enviar el codigo de verificacion. Intenta de nuevo en unos minutos.');
         } else {
-          setError('Error del servidor. Intenta nuevamente.');
+          setError('No se pudo iniciar sesion con password. Intenta nuevamente.');
         }
       } else {
         setError('No se pudo iniciar sesión. Intenta nuevamente.');
