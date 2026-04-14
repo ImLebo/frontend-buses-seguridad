@@ -3,6 +3,8 @@ import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 import { GitHubCallbackPage } from '../pages/GitHubCallbackPage';
 import { GoogleCallbackPage } from '../pages/GoogleCallbackPage';
 import { LoginPage } from '../pages/LoginPage';
+import { PasswordRecoveryConfirmPage } from '../pages/PasswordRecoveryConfirmPage';
+import { PasswordRecoveryPage } from '../pages/PasswordRecoveryPage';
 import { PrivateAppPage } from '../pages/PrivateAppPage';
 import { RegisterPage } from '../pages/RegisterPage';
 import { RegisterTwoFactorPage } from '../pages/RegisterTwoFactorPage';
@@ -72,6 +74,8 @@ export const AppRouter = () => {
     <Routes>
       <Route element={<RedirectBySession />} path="/" />
       <Route element={<LoginPage />} path="/login" />
+      <Route element={<PasswordRecoveryPage />} path="/password-recovery" />
+      <Route element={<PasswordRecoveryConfirmPage />} path="/password-recovery/confirm" />
       <Route element={<RegisterPage />} path="/register" />
       <Route element={<TwoFactorPage />} path="/login/2fa" />
       <Route element={<RegisterTwoFactorPage />} path="/register/2fa" />

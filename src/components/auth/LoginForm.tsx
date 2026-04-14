@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Button, Input } from '../ui';
+import { useState } from 'react';
 import { getRecaptchaToken } from '../../utils/recaptcha';
+import { Button, Input } from '../ui';
 
 type LoginFormProps = {
 	loading: boolean;

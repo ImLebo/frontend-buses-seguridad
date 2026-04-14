@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { useState } from 'react';
 import { Button, Input } from '../ui';
 
 type PasswordRecoveryConfirmFormProps = {
@@ -27,7 +27,7 @@ const validatePassword = (password: string): string | null => {
 		return 'La contraseña debe contener al menos un número';
 	}
 
-	if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+	if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
 		return 'La contraseña debe contener al menos un carácter especial';
 	}
 

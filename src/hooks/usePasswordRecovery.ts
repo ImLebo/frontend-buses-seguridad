@@ -20,7 +20,7 @@ export const usePasswordRecovery = () => {
         recaptchaToken,
       });
 
-      setSuccess('Si el correo existe, enviaremos un código de recuperación.');
+      setSuccess('Código enviado correctamente. Redirigiendo...');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
       setError(errorMessage);

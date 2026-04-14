@@ -1,5 +1,6 @@
-import { useState } from 'react';
 import type { FormEvent } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Input } from '../ui';
 
 type PasswordRecoveryFormProps = {
@@ -11,6 +12,7 @@ type PasswordRecoveryFormProps = {
 
 export const PasswordRecoveryForm = ({ loading, error, success, onSubmit }: PasswordRecoveryFormProps) => {
 	const [email, setEmail] = useState('');
+	const navigate = useNavigate();
 
 	const canSubmit = email.trim().length > 0 && !loading;
 
@@ -23,6 +25,16 @@ export const PasswordRecoveryForm = ({ loading, error, success, onSubmit }: Pass
 
 		await onSubmit(email.trim());
 	};
+
+	// Redirigir a confirmación cuando hay éxito
+	React.useEffect(() => {
+		if (success) {
+			const timer = setTimeout(() => {
+				navigate(`/password-recovery/confirm?email=${encodeURIComponent(email)}`);
+			}, 2000);
+			return () => clearTimeout(timer);
+		}
+	}, [success, email, navigate]);
 
 	return (
 		<form className="space-y-4" onSubmit={handleSubmit}>
