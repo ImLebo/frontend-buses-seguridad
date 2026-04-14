@@ -1,6 +1,8 @@
-import { useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import type { CreateRolePermissionInput, RolePermission } from '../../types';
-import { Button, Input } from '../ui';
+import { Button, Select } from '../ui';
+import { usePermissions } from '../../hooks/usePermissions';
+import { useRoles } from '../../hooks/useRoles';
 
 interface RolePermissionFormProps {
   mode: 'create' | 'edit';
@@ -17,6 +19,9 @@ export const RolePermissionForm = ({
   onSubmit,
   onCancel,
 }: RolePermissionFormProps) => {
+  const { data: roles, loading: rolesLoading, getAll: getAllRoles } = useRoles();
+  const { data: permissions, loading: permissionsLoading, getAll: getAllPermissions } = usePermissions();
+
   const [values, setValues] = useState<CreateRolePermissionInput>({
     role: { id: initialValues?.role.id ?? '' },
     permission: { id: initialValues?.permission.id ?? '' },
@@ -24,10 +29,33 @@ export const RolePermissionForm = ({
 
   const [touched, setTouched] = useState({ roleId: false, permissionId: false });
 
+  useEffect(() => {
+    getAllRoles();
+    getAllPermissions();
+  }, [getAllRoles, getAllPermissions]);
+
+  const roleOptions = useMemo(() => {
+    return roles.map((role) => ({
+      value: role.id,
+      label: role.name,
+    }));
+  }, [roles]);
+
+  const permissionOptions = useMemo(() => {
+    return permissions.map((permission) => ({
+      value: permission.id,
+      label: permission.module && permission.action
+        ? `${permission.module} - ${permission.action}`
+        : permission.url && permission.method
+        ? `${permission.method} ${permission.url}`
+        : `Permiso ${permission.id}`,
+    }));
+  }, [permissions]);
+
   const errors = useMemo(() => {
     return {
-      roleId: values.role.id.trim() ? '' : 'El role id es obligatorio.',
-      permissionId: values.permission.id.trim() ? '' : 'El permission id es obligatorio.',
+      roleId: values.role.id.trim() ? '' : 'Debe seleccionar un rol.',
+      permissionId: values.permission.id.trim() ? '' : 'Debe seleccionar un permiso.',
     };
   }, [values]);
 
@@ -49,36 +77,38 @@ export const RolePermissionForm = ({
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      <Input
+      <Select
         error={touched.roleId ? errors.roleId : undefined}
         id="rp-role-id"
-        label="Role ID"
+        label="Rol"
         onBlur={() => setTouched((prev) => ({ ...prev, roleId: true }))}
         onChange={(event) =>
           setValues((prev) => ({ ...prev, role: { id: event.target.value } }))
         }
-        placeholder="role-id"
+        options={roleOptions}
         value={values.role.id}
+        disabled={rolesLoading}
       />
 
-      <Input
+      <Select
         error={touched.permissionId ? errors.permissionId : undefined}
         id="rp-permission-id"
-        label="Permission ID"
+        label="Permiso"
         onBlur={() => setTouched((prev) => ({ ...prev, permissionId: true }))}
         onChange={(event) =>
           setValues((prev) => ({ ...prev, permission: { id: event.target.value } }))
         }
-        placeholder="permission-id"
+        options={permissionOptions}
         value={values.permission.id}
+        disabled={permissionsLoading}
       />
 
       <div className="flex justify-end gap-2">
         <Button onClick={onCancel} type="button" variant="ghost">
           Cancelar
         </Button>
-        <Button disabled={!isValid || submitting} loading={submitting} type="submit">
-          {mode === 'create' ? 'Crear relacion' : 'Guardar cambios'}
+        <Button disabled={!isValid || submitting || rolesLoading || permissionsLoading} loading={submitting} type="submit">
+          {mode === 'create' ? 'Crear relación' : 'Guardar cambios'}
         </Button>
       </div>
     </form>

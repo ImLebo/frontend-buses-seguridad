@@ -1,14 +1,15 @@
 import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LoginForm } from '../components/auth';
+import { MicrosoftLoginButton } from '../components/auth/MicrosoftLoginButton';
 import { Button } from '../components/ui';
 import {
-  getGitHubAuthorizationUrl,
-  getGoogleAuthorizationUrl,
-  isApiError,
-  loginWithPassword,
-  saveLoginChallenge,
-  saveSessionToken,
+    getGitHubAuthorizationUrl,
+    getGoogleAuthorizationUrl,
+    isApiError,
+    loginWithPassword,
+    saveLoginChallenge,
+    saveSessionToken,
 } from '../services/authService';
 
 const queryMessageMap: Record<string, string> = {
@@ -127,11 +128,28 @@ export const LoginPage = () => {
           <Button className="w-full" loading={loadingGitHub} onClick={startGitHubLogin} size="lg" type="button" variant="ghost">
             Continuar con GitHub
           </Button>
+          <MicrosoftLoginButton
+            onSuccess={() => navigate('/app', { replace: true })}
+            onError={(err) => setError(err.message)}
+          />
         </div>
 
         <p className="mt-6 text-xs text-text-muted">
           Consejo: asegurate de configurar la misma redirect URI en Google Cloud Console y backend.
         </p>
+
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            ¿No tienes cuenta?{' '}
+            <Button
+              variant="ghost"
+              className="p-0 text-sm"
+              onClick={() => navigate('/register')}
+            >
+              Regístrate
+            </Button>
+          </p>
+        </div>
       </section>
     </div>
   );

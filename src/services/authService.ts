@@ -1,11 +1,13 @@
-import { ApiError, apiRequest } from './api';
 import type {
-  LoginChallenge,
-  LoginRequest,
-  LoginResponse,
-  VerifyTwoFactorRequest,
-  VerifyTwoFactorResponse,
+    LoginChallenge,
+    LoginRequest,
+    LoginResponse,
+    RegisterRequest,
+    RegisterResponse,
+    VerifyTwoFactorRequest,
+    VerifyTwoFactorResponse,
 } from '../types';
+import { ApiError, apiRequest } from './api';
 
 const TOKEN_KEY = 'token';
 const LOGIN_CHALLENGE_KEY = 'loginChallenge';
@@ -63,6 +65,13 @@ export const exchangeGitHubCode = async (code: string): Promise<GitHubTokenRespo
 
 export const loginWithPassword = async (payload: LoginRequest): Promise<LoginResponse> => {
   return apiRequest<LoginResponse>('/security/login', {
+    method: 'POST',
+    body: payload,
+  });
+};
+
+export const register = async (payload: RegisterRequest): Promise<RegisterResponse> => {
+  return apiRequest<RegisterResponse>('/security/register', {
     method: 'POST',
     body: payload,
   });

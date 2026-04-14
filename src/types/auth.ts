@@ -3,6 +3,12 @@ export type LoginRequest = {
 	password: string;
 };
 
+export type RegisterRequest = {
+	name: string;
+	email: string;
+	password: string;
+};
+
 export type LoginChallenge = {
 	sessionId: string;
 	expiresAt: number;
@@ -29,6 +35,8 @@ export type LoginResponse =
 			maskedEmail?: never;
 			message?: string;
 		};
+
+export type RegisterResponse = LoginResponse;
 
 export type VerifyTwoFactorRequest = {
 	sessionId: string;
