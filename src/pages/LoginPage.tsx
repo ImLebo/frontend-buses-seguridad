@@ -57,8 +57,14 @@ export const LoginPage = () => {
       saveSessionToken(response.token);
       navigate('/app', { replace: true });
     } catch (caughtError) {
-      if (isApiError(caughtError) && caughtError.status === 401) {
-        setError('Credenciales invalidas');
+      if (isApiError(caughtError)) {
+        if (caughtError.status === 401) {
+          setError('Email o contrasena incorrectos');
+        } else if (caughtError.status === 503) {
+          setError('No pudimos enviar el codigo de verificacion. Intenta de nuevo en unos minutos.');
+        } else {
+          setError('No se pudo iniciar sesion con password. Intenta nuevamente.');
+        }
       } else {
         setError('No se pudo iniciar sesion con password. Intenta nuevamente.');
       }

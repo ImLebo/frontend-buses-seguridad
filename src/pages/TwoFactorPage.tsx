@@ -69,6 +69,7 @@ export const TwoFactorPage = () => {
       if (isApiError(caughtError)) {
         if (caughtError.status === 400) {
           setMessage(caughtError.message);
+          setCode('');
           return;
         }
 
