@@ -1,6 +1,7 @@
 export type LoginRequest = {
 	email: string;
 	password: string;
+	recaptchaToken: string;
 };
 
 export type RegisterRequest = {
@@ -46,5 +47,24 @@ export type VerifyTwoFactorRequest = {
 export type VerifyTwoFactorResponse = {
 	token: string;
 	requires2FA: false;
+	message: string;
+};
+
+export type PasswordRecoveryRequest = {
+	email: string;
+	recaptchaToken: string;
+};
+
+export type PasswordRecoveryResponse = {
+	message: string;
+};
+
+export type PasswordRecoveryConfirmRequest = {
+	email: string;
+	code: string;
+	newPassword: string;
+};
+
+export type PasswordRecoveryConfirmResponse = {
 	message: string;
 };

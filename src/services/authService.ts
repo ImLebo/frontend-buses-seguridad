@@ -2,6 +2,10 @@ import type {
     LoginChallenge,
     LoginRequest,
     LoginResponse,
+    PasswordRecoveryConfirmRequest,
+    PasswordRecoveryConfirmResponse,
+    PasswordRecoveryRequest,
+    PasswordRecoveryResponse,
     RegisterRequest,
     RegisterResponse,
     VerifyTwoFactorRequest,
@@ -96,6 +100,20 @@ export const clearSessionToken = (): void => {
   sessionStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem('authToken');
+};
+
+export const requestPasswordRecovery = async (payload: PasswordRecoveryRequest): Promise<PasswordRecoveryResponse> => {
+  return apiRequest<PasswordRecoveryResponse>('/security/password-recovery/request', {
+    method: 'POST',
+    body: payload,
+  });
+};
+
+export const confirmPasswordRecovery = async (payload: PasswordRecoveryConfirmRequest): Promise<PasswordRecoveryConfirmResponse> => {
+  return apiRequest<PasswordRecoveryConfirmResponse>('/security/password-recovery/confirm', {
+    method: 'POST',
+    body: payload,
+  });
 };
 
 export const saveLoginChallenge = (challenge: LoginChallenge): void => {

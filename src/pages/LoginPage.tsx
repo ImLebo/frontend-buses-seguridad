@@ -36,7 +36,7 @@ export const LoginPage = () => {
     return queryMessageMap[errorCode] ?? 'No fue posible completar el inicio de sesion.';
   }, [location.search]);
 
-  const handlePasswordLogin = async (payload: { email: string; password: string }) => {
+  const handlePasswordLogin = async (payload: { email: string; password: string; recaptchaToken: string }) => {
     setLoadingCredentials(true);
     setError(null);
 
@@ -57,10 +57,16 @@ export const LoginPage = () => {
       saveSessionToken(response.token);
       navigate('/app', { replace: true });
     } catch (caughtError) {
-      if (isApiError(caughtError) && caughtError.status === 401) {
-        setError('Credenciales invalidas');
+      if (isApiError(caughtError)) {
+        if (caughtError.status === 400) {
+          setError(caughtError.message || 'Datos inválidos. Verifica tu información.');
+        } else if (caughtError.status === 401) {
+          setError('No se pudo validar reCAPTCHA o credenciales inválidas. Intenta de nuevo.');
+        } else {
+          setError('Error del servidor. Intenta nuevamente.');
+        }
       } else {
-        setError('No se pudo iniciar sesion con password. Intenta nuevamente.');
+        setError('No se pudo iniciar sesión. Intenta nuevamente.');
       }
     } finally {
       setLoadingCredentials(false);

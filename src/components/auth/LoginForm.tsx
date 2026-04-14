@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button, Input } from '../ui';
+import { getRecaptchaToken } from '../../utils/recaptcha';
 
 type LoginFormProps = {
 	loading: boolean;
 	error?: string | null;
-	onSubmit: (payload: { email: string; password: string }) => Promise<void>;
+	onSubmit: (payload: { email: string; password: string; recaptchaToken: string }) => Promise<void>;
 };
 
 export const LoginForm = ({ loading, error, onSubmit }: LoginFormProps) => {
@@ -21,10 +22,18 @@ export const LoginForm = ({ loading, error, onSubmit }: LoginFormProps) => {
 			return;
 		}
 
-		await onSubmit({
-			email: email.trim(),
-			password,
-		});
+		try {
+			const recaptchaToken = await getRecaptchaToken('login');
+
+			await onSubmit({
+				email: email.trim(),
+				password,
+				recaptchaToken,
+			});
+		} catch (err) {
+			// El error será manejado por el componente padre
+			console.error('Error obteniendo reCAPTCHA token:', err);
+		}
 	};
 
 	return (
