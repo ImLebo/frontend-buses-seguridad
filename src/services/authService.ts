@@ -1,6 +1,14 @@
 import { ApiError, apiRequest } from './api';
+import type {
+  LoginChallenge,
+  LoginRequest,
+  LoginResponse,
+  VerifyTwoFactorRequest,
+  VerifyTwoFactorResponse,
+} from '../types';
 
 const TOKEN_KEY = 'token';
+const LOGIN_CHALLENGE_KEY = 'loginChallenge';
 
 type GoogleAuthorizationUrlResponse = {
   authorizationUrl: string;
@@ -53,6 +61,20 @@ export const exchangeGitHubCode = async (code: string): Promise<GitHubTokenRespo
   });
 };
 
+export const loginWithPassword = async (payload: LoginRequest): Promise<LoginResponse> => {
+  return apiRequest<LoginResponse>('/security/login', {
+    method: 'POST',
+    body: payload,
+  });
+};
+
+export const verifyTwoFactorCode = async (payload: VerifyTwoFactorRequest): Promise<VerifyTwoFactorResponse> => {
+  return apiRequest<VerifyTwoFactorResponse>('/security/login/2fa/verify', {
+    method: 'POST',
+    body: payload,
+  });
+};
+
 export const saveSessionToken = (token: string): void => {
   sessionStorage.setItem(TOKEN_KEY, token);
 };
@@ -65,6 +87,29 @@ export const clearSessionToken = (): void => {
   sessionStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem('authToken');
+};
+
+export const saveLoginChallenge = (challenge: LoginChallenge): void => {
+  sessionStorage.setItem(LOGIN_CHALLENGE_KEY, JSON.stringify(challenge));
+};
+
+export const getLoginChallenge = (): LoginChallenge | null => {
+  const rawChallenge = sessionStorage.getItem(LOGIN_CHALLENGE_KEY);
+
+  if (!rawChallenge) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(rawChallenge) as LoginChallenge;
+  } catch {
+    sessionStorage.removeItem(LOGIN_CHALLENGE_KEY);
+    return null;
+  }
+};
+
+export const clearLoginChallenge = (): void => {
+  sessionStorage.removeItem(LOGIN_CHALLENGE_KEY);
 };
 
 export const isApiError = (error: unknown): error is ApiError => {

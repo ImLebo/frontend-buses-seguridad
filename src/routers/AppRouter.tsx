@@ -3,6 +3,7 @@ import { GoogleCallbackPage } from '../pages/GoogleCallbackPage';
 import { GitHubCallbackPage } from '../pages/GitHubCallbackPage';
 import { LoginPage } from '../pages/LoginPage';
 import { PrivateAppPage } from '../pages/PrivateAppPage';
+import { TwoFactorPage } from '../pages/TwoFactorPage.tsx';
 import { getSessionToken, clearSessionToken } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -70,6 +71,7 @@ export const AppRouter = () => {
     <Routes>
       <Route element={<RedirectBySession />} path="/" />
       <Route element={<LoginPage />} path="/login" />
+      <Route element={<TwoFactorPage />} path="/login/2fa" />
       <Route element={<GoogleCallbackPage />} path="/auth/google/callback" />
       <Route element={<GitHubCallbackPage />} path="/auth/github/callback" />
       <Route element={<RequireAuth />}>
