@@ -11,10 +11,10 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, Pr
 }
 
 const variantClassMap: Record<ButtonVariant, string> = {
-  primary: 'bg-primary text-white shadow-sm hover:-translate-y-0.5 hover:bg-primary-700 hover:shadow-md focus-visible:ring-primary',
-  secondary: 'bg-secondary text-white shadow-sm hover:-translate-y-0.5 hover:bg-teal-700 hover:shadow-md focus-visible:ring-secondary',
-  danger: 'bg-red-700 text-white shadow-sm hover:-translate-y-0.5 hover:bg-red-800 hover:shadow-md focus-visible:ring-red-700',
-  ghost: 'bg-transparent text-text-secondary hover:bg-slate-100 focus-visible:ring-accent',
+  primary: 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/40 hover:-translate-y-0.5 hover:from-indigo-600 hover:to-purple-700 focus-visible:ring-indigo-500',
+  secondary: 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/40 hover:-translate-y-0.5 hover:from-cyan-600 hover:to-teal-700 focus-visible:ring-cyan-500',
+  danger: 'bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/40 hover:-translate-y-0.5 hover:from-red-600 hover:to-pink-700 focus-visible:ring-red-500',
+  ghost: 'bg-white/80 backdrop-blur-sm text-gray-700 border border-gray-200 hover:bg-white hover:shadow-md hover:-translate-y-0.5 focus-visible:ring-gray-500',
 };
 
 const sizeClassMap: Record<ButtonSize, string> = {

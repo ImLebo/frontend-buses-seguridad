@@ -17,14 +17,17 @@ export const MainLayout = ({ children, navItems = defaultItems, onLogout }: Main
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background text-text-primary">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="flex min-h-screen">
         <Sidebar isOpen={isSidebarOpen} items={navItems} onClose={() => setSidebarOpen(false)} />
 
         <div className="flex min-w-0 flex-1 flex-col">
           <Navbar onLogout={onLogout} onMenuClick={() => setSidebarOpen((previous) => !previous)} />
-          <main className="flex-1 p-6 lg:p-8">
-            <div className="mx-auto w-full max-w-7xl">{children}</div>
+
+          <main className="flex-1 overflow-auto">
+            <div className="container mx-auto px-4 py-6 lg:px-8 lg:py-8 max-w-7xl">
+              {children}
+            </div>
           </main>
         </div>
       </div>

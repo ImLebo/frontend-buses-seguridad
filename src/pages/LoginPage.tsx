@@ -36,7 +36,7 @@ export const LoginPage = () => {
     return queryMessageMap[errorCode] ?? 'No fue posible completar el inicio de sesion.';
   }, [location.search]);
 
-  const handlePasswordLogin = async (payload: { email: string; password: string }) => {
+  const handlePasswordLogin = async (payload: { email: string; password: string; recaptchaToken: string }) => {
     setLoadingCredentials(true);
     setError(null);
 
@@ -66,7 +66,7 @@ export const LoginPage = () => {
           setError('No se pudo iniciar sesion con password. Intenta nuevamente.');
         }
       } else {
-        setError('No se pudo iniciar sesion con password. Intenta nuevamente.');
+        setError('No se pudo iniciar sesión. Intenta nuevamente.');
       }
     } finally {
       setLoadingCredentials(false);
@@ -191,7 +191,7 @@ export const LoginPage = () => {
             />
           </div>
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-2">
             <p className="text-sm text-gray-600">
               ¿No tienes cuenta?{' '}
               <button
@@ -199,6 +199,14 @@ export const LoginPage = () => {
                 className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
               >
                 Regístrate
+              </button>
+            </p>
+            <p className="text-sm text-gray-600">
+              <button
+                onClick={() => navigate('/password-recovery')}
+                className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+              >
+                ¿Olvidaste tu contraseña?
               </button>
             </p>
           </div>

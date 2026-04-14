@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 import babel from '@rolldown/plugin-babel'
+import tailwindcss from '@tailwindcss/vite'
+import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,4 +10,10 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     tailwindcss(),
   ],
+  define: {
+    // Reemplazar la variable en el HTML
+    'process.env': {
+      RECAPTCHA_SITE_KEY: JSON.stringify(process.env.VITE_RECAPTCHA_SITE_KEY || ''),
+    },
+  },
 })
