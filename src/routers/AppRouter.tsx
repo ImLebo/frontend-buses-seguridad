@@ -5,11 +5,50 @@ import { LoginPage } from '../pages/LoginPage';
 import { PrivateAppPage } from '../pages/PrivateAppPage';
 import { getSessionToken, clearSessionToken } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 const RequireAuth = () => {
   const token = getSessionToken();
+  const [isValidating, setIsValidating] = useState(true);
+  const [isValid, setIsValid] = useState(false);
+  const navigate = useNavigate();
 
-  if (!token) {
+  useEffect(() => {
+    const validateToken = async () => {
+      try {
+        if (!token) {
+          setIsValid(false);
+          setIsValidating(false);
+          return;
+        }
+
+        // HU-ENTR-1-009: Validar token con backend
+        const response = await fetch('http://localhost:8181/security/validate-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+
+        const data = await response.json();
+        setIsValid(data.valid === true);
+      } catch (error) {
+        console.error('Error validating token:', error);
+        setIsValid(false);
+        clearSessionToken();
+      } finally {
+        setIsValidating(false);
+      }
+    };
+
+    validateToken();
+  }, [token, navigate]);
+
+  if (isValidating) {
+    return <div className="flex items-center justify-center min-h-screen">Cargando...</div>;
+  }
+
+  if (!isValid) {
+    // HU-ENTR-1-009: Sesión expirada
     return <Navigate replace to="/login" />;
   }
 
