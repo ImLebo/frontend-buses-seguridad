@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import type { CreateRolePermissionInput, RolePermission } from '../../types';
-import { Button, Select } from '../ui';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useRoles } from '../../hooks/useRoles';
+import type { CreateRolePermissionInput, RolePermission } from '../../types';
+import { Button, Select } from '../ui';
 
 interface RolePermissionFormProps {
   mode: 'create' | 'edit';
