@@ -1,12 +1,13 @@
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
-import { GoogleCallbackPage } from '../pages/GoogleCallbackPage';
+import { useEffect, useState } from 'react';
+import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 import { GitHubCallbackPage } from '../pages/GitHubCallbackPage';
+import { GoogleCallbackPage } from '../pages/GoogleCallbackPage';
 import { LoginPage } from '../pages/LoginPage';
 import { PrivateAppPage } from '../pages/PrivateAppPage';
+import { RegisterPage } from '../pages/RegisterPage';
+import { RegisterTwoFactorPage } from '../pages/RegisterTwoFactorPage';
 import { TwoFactorPage } from '../pages/TwoFactorPage.tsx';
-import { getSessionToken, clearSessionToken } from '../services/authService';
-import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { clearSessionToken, getSessionToken } from '../services/authService';
 
 const RequireAuth = () => {
   const token = getSessionToken();
@@ -71,7 +72,9 @@ export const AppRouter = () => {
     <Routes>
       <Route element={<RedirectBySession />} path="/" />
       <Route element={<LoginPage />} path="/login" />
+      <Route element={<RegisterPage />} path="/register" />
       <Route element={<TwoFactorPage />} path="/login/2fa" />
+      <Route element={<RegisterTwoFactorPage />} path="/register/2fa" />
       <Route element={<GoogleCallbackPage />} path="/auth/google/callback" />
       <Route element={<GitHubCallbackPage />} path="/auth/github/callback" />
       <Route element={<RequireAuth />}>

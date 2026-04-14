@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Button, Card, ConfirmDialog, Input, Modal } from '../components/ui';
 import { UserForm } from '../components/users/UserForm';
 import { UserTable } from '../components/users/UserTable';
-import { Button, Card, ConfirmDialog, Modal, Input } from '../components/ui';
-import { useUsers, useUserSearch } from '../hooks/useUsers';
 import { useRoles } from '../hooks/useRoles';
-import type { CreateUserInput, User, Role } from '../types';
+import { useUsers, useUserSearch } from '../hooks/useUsers';
 import { userService } from '../services/userService';
+import type { CreateUserInput, Role, User } from '../types';
 
 export const UsersPage = () => {
   // CRUD básico
@@ -23,7 +23,7 @@ export const UsersPage = () => {
   const { results: searchResults } = useUserSearch(searchQuery);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [selectedUserForRoles, setSelectedUserForRoles] = useState<User | null>(null);
-  const [userRoles, setUserRoles] = useState<Role[]>([]);
+  const [_userRoles, setUserRoles] = useState<Role[]>([]);  // TODO: use in UI
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
   const [loadingRoles, setLoadingRoles] = useState(false);
 
