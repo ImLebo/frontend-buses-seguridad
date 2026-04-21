@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { PasswordRecoveryConfirmForm } from '../components/auth';
+import { PasswordRecoveryConfirmForm } from '../components/auth/PasswordRecoveryConfirmForm';
 import { usePasswordRecovery } from '../hooks/usePasswordRecovery';
 
 export const PasswordRecoveryConfirmPage = () => {

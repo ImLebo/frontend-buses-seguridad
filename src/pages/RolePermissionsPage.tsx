@@ -11,7 +11,7 @@ import type {
 } from '../types';
 
 export const RolePermissionsPage = () => {
-  const { data, loading, error, create, update, remove } = useRolePermissions();
+  const { data, loading, error, authError, create, update, remove } = useRolePermissions();
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -48,6 +48,8 @@ export const RolePermissionsPage = () => {
         await update({ ...selected, ...values });
       }
       closeForm();
+    } catch (err) {
+      // Error manejado por el hook.
     } finally {
       setSubmitting(false);
     }
@@ -57,8 +59,12 @@ export const RolePermissionsPage = () => {
     if (!deleteTarget) {
       return;
     }
-    await remove(deleteTarget.id);
-    setDeleteTarget(null);
+    try {
+      await remove(deleteTarget.id);
+      setDeleteTarget(null);
+    } catch (err) {
+      // Error manejado por el hook.
+    }
   };
 
   return (
@@ -73,7 +79,11 @@ export const RolePermissionsPage = () => {
         </Button>
       </div>
 
-      {error ? <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
+      {authError || error ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {authError ?? error?.message}
+        </div>
+      ) : null}
 
       <Card>
         <RolePermissionTable
@@ -85,6 +95,11 @@ export const RolePermissionsPage = () => {
       </Card>
 
       <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear relacion' : 'Editar relacion'}>
+        {authError || error ? (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {authError ?? error?.message}
+          </div>
+        ) : null}
         <RolePermissionForm
           key={selected?.id ?? 'create'}
           initialValues={selected ?? undefined}

@@ -5,7 +5,7 @@ import { useRoles } from '../hooks/useRoles';
 import type { CreateRoleInput, Role } from '../types';
 
 export const RolesPage = () => {
-  const { data, loading, error, create, update, remove, getAll: fetchRoles } = useRoles();
+  const { data, loading, error, authError, create, update, remove, getAll: fetchRoles } = useRoles();
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -47,6 +47,8 @@ export const RolesPage = () => {
         await update({ ...selected, ...values });
       }
       closeForm();
+    } catch (err) {
+      // Error manejado por el hook.
     } finally {
       setSubmitting(false);
     }
@@ -78,9 +80,9 @@ export const RolesPage = () => {
         </Button>
       </div>
 
-      {error ? (
+      {authError || error ? (
         <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          {error}
+          {authError ?? error?.message}
         </div>
       ) : null}
 
@@ -89,6 +91,11 @@ export const RolesPage = () => {
       </Card>
 
       <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear rol' : 'Editar rol'} size="md">
+        {authError || error ? (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {authError ?? error?.message}
+          </div>
+        ) : null}
         <RoleForm
           key={selected?.id ?? 'create'}
           initialValues={selected ?? undefined}

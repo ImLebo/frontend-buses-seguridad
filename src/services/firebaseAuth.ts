@@ -12,6 +12,7 @@ export interface FirebaseAuthUser {
   displayName: string | null;
   photoURL: string | null;
   emailVerified: boolean;
+  provider?: string; // 'google', 'github', 'microsoft', etc.
 }
 
 export interface FirebaseAuthResult {
@@ -25,12 +26,30 @@ export interface FirebaseAuthResult {
 const convertFirebaseUser = (user: User | null): FirebaseAuthUser | null => {
   if (!user) return null;
   
+  // Detectar el proveedor OAuth usado
+  let provider: string | undefined;
+  if (user.providerData && user.providerData.length > 0) {
+    const providerId = user.providerData[0].providerId;
+    if (providerId.includes('google')) {
+      provider = 'google';
+    } else if (providerId.includes('github')) {
+      provider = 'github';
+    } else if (providerId.includes('microsoft')) {
+      provider = 'microsoft';
+    } else if (providerId.includes('facebook')) {
+      provider = 'facebook';
+    } else {
+      provider = providerId.split('.')[0];
+    }
+  }
+  
   return {
     uid: user.uid,
     email: user.email,
     displayName: user.displayName,
     photoURL: user.photoURL,
     emailVerified: user.emailVerified,
+    provider,
   };
 };
 
