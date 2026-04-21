@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, ConfirmDialog, Input, Modal } from '../components/ui';
+import { Alert, Button, Card, ConfirmDialog, Input, Modal } from '../components/ui';
 import { UserForm } from '../components/users/UserForm';
 import { UserTable } from '../components/users/UserTable';
 import { useRoles } from '../hooks/useRoles';
@@ -9,7 +9,7 @@ import type { CreateUserInput, Role, User } from '../types';
 
 export const UsersPage = () => {
   // CRUD básico
-  const { data, loading, error, create, update, remove } = useUsers();
+  const { data, loading, error, authError, create, update, remove, clearError } = useUsers();
   const { data: roles } = useRoles();
 
   const [isFormOpen, setFormOpen] = useState(false);
@@ -26,6 +26,7 @@ export const UsersPage = () => {
   const [_userRoles, setUserRoles] = useState<Role[]>([]);  // TODO: use in UI
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
   const [loadingRoles, setLoadingRoles] = useState(false);
+  const [roleError, setRoleError] = useState<string | null>(null);
 
   // Cargar roles del usuario cuando se selecciona
   useEffect(() => {
@@ -37,13 +38,16 @@ export const UsersPage = () => {
   const loadUserRoles = async (userId: string) => {
     try {
       setLoadingRoles(true);
+      setRoleError(null);
       const info = await userService.getUserWithRoles(userId);
       if (info) {
         setUserRoles(info.roles);
         setSelectedRoleIds(info.roles.map((r: Role) => r.id));
       }
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error al cargar los roles del usuario';
       console.error('Error cargando roles del usuario', err);
+      setRoleError(errorMessage);
     } finally {
       setLoadingRoles(false);
     }
@@ -52,12 +56,14 @@ export const UsersPage = () => {
   // ... métodos CRUD existentes ...
 
   const openCreate = () => {
+    clearError();
     setSelected(null);
     setMode('create');
     setFormOpen(true);
   };
 
   const openEdit = (item: User) => {
+    clearError();
     setSelected(item);
     setMode('edit');
     setFormOpen(true);
@@ -69,6 +75,7 @@ export const UsersPage = () => {
     }
     setFormOpen(false);
     setSelected(null);
+    clearError();
   };
 
   const handleSubmit = async (values: CreateUserInput) => {
@@ -80,6 +87,8 @@ export const UsersPage = () => {
         await update({ ...selected, ...values });
       }
       closeForm();
+    } catch (err) {
+      // El hook (`useCrudResource`) ya deja el mensaje en `error/authError` para mostrarlo en UI.
     } finally {
       setSubmitting(false);
     }
@@ -89,34 +98,40 @@ export const UsersPage = () => {
     if (!deleteTarget) {
       return;
     }
-    await remove(deleteTarget.id);
-    setDeleteTarget(null);
+    try {
+      await remove(deleteTarget.id);
+      setDeleteTarget(null);
+    } catch (err) {
+      // Error manejado por el hook.
+    }
   };
 
   // Nuevos métodos para gestión de roles
   const handleOpenRoleModal = (user: User) => {
     setSelectedUserForRoles(user);
+    setRoleError(null);
     setIsRoleModalOpen(true);
   };
 
   const handleSaveRoles = async () => {
     if (!selectedUserForRoles) {
-      alert('Error: Usuario no seleccionado');
+      setRoleError('Error: Usuario no seleccionado');
       return;
     }
 
     if (!selectedUserForRoles.id) {
-      alert('Error: ID de usuario no válido. Intente nuevamente.');
+      setRoleError('Error: ID de usuario no válido. Intente nuevamente.');
       return;
     }
 
     if (selectedRoleIds.length === 0) {
-      alert('Por favor, seleccione al menos un rol');
+      setRoleError('Por favor, seleccione al menos un rol');
       return;
     }
 
     try {
       setLoadingRoles(true);
+      setRoleError(null);
       console.log('Guardando roles para usuario:', selectedUserForRoles.id);
       console.log('Roles a asignar:', selectedRoleIds);
 
@@ -124,7 +139,7 @@ export const UsersPage = () => {
 
       console.log('Respuesta del servidor:', response);
 
-      alert('Roles asignados correctamente');
+      // Mostrar éxito
       setIsRoleModalOpen(false);
       setSelectedUserForRoles(null);
       setSelectedRoleIds([]);
@@ -135,8 +150,16 @@ export const UsersPage = () => {
       }, 1000);
     } catch (err) {
       console.error('Error guardando roles:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido al guardar los roles';
-      alert(`Error al guardar los roles: ${errorMessage}`);
+      const apiError = err as any;
+      const status = apiError?.status as number | undefined;
+      const isAuthError = status === 401 || status === 403;
+      
+      if (isAuthError) {
+        setRoleError('No estas autorizado para asignar roles a este usuario');
+      } else {
+        const errorMessage = err instanceof Error ? err.message : 'Error desconocido al guardar los roles';
+        setRoleError(errorMessage);
+      }
     } finally {
       setLoadingRoles(false);
     }
@@ -162,11 +185,26 @@ export const UsersPage = () => {
         </Button>
       </div>
 
-      {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          {error}
-        </div>
-      ) : null}
+      {authError && (
+        <Alert
+          type="error"
+          title="Acceso Denegado"
+          message={authError}
+          onClose={() => clearError()}
+          autoClose={true}
+          autoCloseDuration={7000}
+        />
+      )}
+
+      {error && !authError && (
+        <Alert
+          type="error"
+          title="Error"
+          message={error.message || 'Ocurrió un error al cargar los datos'}
+          onClose={() => clearError()}
+          autoClose={false}
+        />
+      )}
 
       <Card>
         <div className="space-y-4">
@@ -188,6 +226,27 @@ export const UsersPage = () => {
       </Card>
 
       <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear usuario' : 'Editar usuario'} size="md">
+        {authError && (
+          <Alert
+            type="error"
+            title="Acceso Denegado"
+            message={authError}
+            onClose={() => clearError()}
+            autoClose={true}
+            autoCloseDuration={7000}
+          />
+        )}
+
+        {error && !authError && (
+          <Alert
+            type="error"
+            title="Error"
+            message={error.message || 'Ocurrió un error al procesar la solicitud'}
+            onClose={() => clearError()}
+            autoClose={false}
+          />
+        )}
+
         <UserForm
           key={selected?.id ?? 'create'}
           initialValues={selected ?? undefined}
@@ -201,6 +260,16 @@ export const UsersPage = () => {
       <Modal isOpen={isRoleModalOpen} onClose={() => setIsRoleModalOpen(false)} title="Asignar Roles" size="md">
         {selectedUserForRoles && (
           <div className="space-y-4 max-h-[calc(90vh-150px)] overflow-y-auto">
+            {roleError && (
+              <Alert
+                type="error"
+                title="Error"
+                message={roleError}
+                onClose={() => setRoleError(null)}
+                autoClose={false}
+              />
+            )}
+
             <div className="rounded-lg bg-slate-50 p-4">
               <p className="text-sm font-semibold text-slate-900">{selectedUserForRoles.name}</p>
               <p className="text-sm text-slate-600">{selectedUserForRoles.email}</p>

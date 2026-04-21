@@ -5,7 +5,7 @@ import { usePermissions } from '../hooks/usePermissions';
 import type { CreatePermissionInput, Permission } from '../types';
 
 export const PermissionsPage = () => {
-  const { data, loading, error, create, update, remove } = usePermissions();
+  const { data, loading, error, authError, create, update, remove } = usePermissions();
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -42,6 +42,8 @@ export const PermissionsPage = () => {
         await update({ ...selected, ...values });
       }
       closeForm();
+    } catch (err) {
+      // Error manejado por el hook.
     } finally {
       setSubmitting(false);
     }
@@ -51,8 +53,12 @@ export const PermissionsPage = () => {
     if (!deleteTarget) {
       return;
     }
-    await remove(deleteTarget.id);
-    setDeleteTarget(null);
+    try {
+      await remove(deleteTarget.id);
+      setDeleteTarget(null);
+    } catch (err) {
+      // Error manejado por el hook.
+    }
   };
 
   return (
@@ -67,13 +73,22 @@ export const PermissionsPage = () => {
         </Button>
       </div>
 
-      {error ? <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
+      {authError || error ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {authError ?? error?.message}
+        </div>
+      ) : null}
 
       <Card>
         <PermissionTable data={data} loading={loading} onDelete={setDeleteTarget} onEdit={openEdit} />
       </Card>
 
       <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear permiso' : 'Editar permiso'}>
+        {authError || error ? (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {authError ?? error?.message}
+          </div>
+        ) : null}
         <PermissionForm
           key={selected?.id ?? 'create'}
           initialValues={selected ?? undefined}

@@ -5,7 +5,7 @@ import { useSessions } from '../hooks/useSessions';
 import type { CreateSessionInput, Session } from '../types';
 
 export const SessionsPage = () => {
-  const { data, loading, error, create, update, remove } = useSessions();
+  const { data, loading, error, authError, create, update, remove } = useSessions();
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -42,6 +42,8 @@ export const SessionsPage = () => {
         await update({ ...selected, ...values });
       }
       closeForm();
+    } catch (err) {
+      // Error manejado por el hook.
     } finally {
       setSubmitting(false);
     }
@@ -51,8 +53,12 @@ export const SessionsPage = () => {
     if (!deleteTarget) {
       return;
     }
-    await remove(deleteTarget.id);
-    setDeleteTarget(null);
+    try {
+      await remove(deleteTarget.id);
+      setDeleteTarget(null);
+    } catch (err) {
+      // Error manejado por el hook.
+    }
   };
 
   return (
@@ -67,13 +73,22 @@ export const SessionsPage = () => {
         </Button>
       </div>
 
-      {error ? <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
+      {authError || error ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {authError ?? error?.message}
+        </div>
+      ) : null}
 
       <Card>
         <SessionTable data={data} loading={loading} onDelete={setDeleteTarget} onEdit={openEdit} />
       </Card>
 
       <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear sesion' : 'Editar sesion'}>
+        {authError || error ? (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {authError ?? error?.message}
+          </div>
+        ) : null}
         <SessionForm
           key={selected?.id ?? 'create'}
           initialValues={selected ?? undefined}
