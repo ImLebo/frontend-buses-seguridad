@@ -8,6 +8,7 @@ import {
     isApiError,
     loginWithPassword,
     saveLoginChallenge,
+    saveSessionProvider,
     saveSessionToken,
 } from '../services/authService';
 
@@ -55,6 +56,7 @@ export const LoginPage = () => {
       }
 
       saveSessionToken(response.token);
+      saveSessionProvider('password');
       navigate('/app', { replace: true });
     } catch (caughtError) {
       if (isApiError(caughtError)) {

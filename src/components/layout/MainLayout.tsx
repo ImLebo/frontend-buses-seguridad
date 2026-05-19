@@ -1,6 +1,7 @@
 import { useState, type PropsWithChildren } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useCurrentUserInfo } from '../../hooks/useCurrentUserInfo';
+import { getSessionProvider } from '../../services/authService';
 import { Navbar } from './Navbar';
 import { Sidebar, type NavItem } from './Sidebar';
 
@@ -24,7 +25,7 @@ export const MainLayout = ({ children, navItems = defaultItems, onLogout }: Main
   const displayName = currentUserInfo?.name || user?.displayName || 'Usuario';
   const userPhoto = currentUserInfo?.photo || user?.photoURL || undefined;
   const userRole = currentUserInfo?.role || currentUserInfo?.roles?.[0] || undefined;
-  const oauthProvider = user?.provider;
+  const oauthProvider = user?.provider || getSessionProvider() || undefined;
 
   console.log('[MainLayout] Debug:', {
     currentUserInfo,

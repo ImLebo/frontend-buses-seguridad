@@ -24,7 +24,7 @@ export const MicrosoftLoginButton = ({
       const error = err instanceof Error ? err : new Error('Error desconocido');
       onError?.(error);
     } finally {
-      setIsLoginLoading(true);
+      setIsLoginLoading(false);
     }
   };
 

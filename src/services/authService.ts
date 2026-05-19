@@ -15,6 +15,7 @@ import { ApiError, apiRequest } from './api';
 
 const TOKEN_KEY = 'token';
 const LOGIN_CHALLENGE_KEY = 'loginChallenge';
+const PROVIDER_KEY = 'oauthProvider';
 
 type GoogleAuthorizationUrlResponse = {
   authorizationUrl: string;
@@ -93,13 +94,26 @@ export const saveSessionToken = (token: string): void => {
 };
 
 export const getSessionToken = (): string | null => {
-  return sessionStorage.getItem(TOKEN_KEY) ?? localStorage.getItem(TOKEN_KEY);
+  return (
+    sessionStorage.getItem(TOKEN_KEY) ??
+    localStorage.getItem(TOKEN_KEY) ??
+    localStorage.getItem('authToken')
+  );
 };
 
 export const clearSessionToken = (): void => {
   sessionStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem('authToken');
+  sessionStorage.removeItem(PROVIDER_KEY);
+};
+
+export const saveSessionProvider = (provider: string): void => {
+  sessionStorage.setItem(PROVIDER_KEY, provider);
+};
+
+export const getSessionProvider = (): string | null => {
+  return sessionStorage.getItem(PROVIDER_KEY);
 };
 
 export const requestPasswordRecovery = async (payload: PasswordRecoveryRequest): Promise<PasswordRecoveryResponse> => {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui';
-import { exchangeGitHubCode, isApiError, saveSessionToken } from '../services/authService';
+import { exchangeGitHubCode, isApiError, saveSessionProvider, saveSessionToken } from '../services/authService';
 
 const getErrorMessageByStatus = (status: number): string => {
   if (status === 400) {
@@ -40,6 +40,7 @@ export const GitHubCallbackPage = () => {
       try {
         const payload = await exchangeGitHubCode(code);
         saveSessionToken(payload.token);
+        saveSessionProvider('github');
         navigate('/app', { replace: true });
       } catch (caughtError) {
         if (isApiError(caughtError)) {
