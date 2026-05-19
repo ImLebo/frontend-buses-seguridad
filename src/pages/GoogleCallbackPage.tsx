@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui';
-import { exchangeGoogleCode, isApiError, saveSessionToken } from '../services/authService';
+import { exchangeGoogleCode, isApiError, saveSessionProvider, saveSessionToken } from '../services/authService';
 
 const getErrorMessageByStatus = (status: number): string => {
   if (status === 400) {
@@ -40,6 +40,7 @@ export const GoogleCallbackPage = () => {
       try {
         const payload = await exchangeGoogleCode(code);
         saveSessionToken(payload.token);
+        saveSessionProvider('google');
         navigate('/app', { replace: true });
       } catch (caughtError) {
         if (isApiError(caughtError)) {

@@ -5,6 +5,7 @@ import {
   clearLoginChallenge,
   getLoginChallenge,
   isApiError,
+  saveSessionProvider,
   saveSessionToken,
   verifyTwoFactorCode,
 } from '../services/authService';
@@ -63,6 +64,7 @@ export const TwoFactorPage = () => {
       });
 
       saveSessionToken(payload.token);
+      saveSessionProvider('password');
       clearLoginChallenge();
       navigate('/app', { replace: true });
     } catch (caughtError) {
