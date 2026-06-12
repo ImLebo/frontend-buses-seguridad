@@ -4,6 +4,7 @@ import {
   RolePermissionTable,
 } from '../components/rolePermissions';
 import { Button, Card, ConfirmDialog, Modal } from '../components/ui';
+import { useRBAC } from '../hooks/useRBAC';
 import { useRolePermissions } from '../hooks/useRolePermissions';
 import type {
   CreateRolePermissionInput,
@@ -12,6 +13,10 @@ import type {
 
 export const RolePermissionsPage = () => {
   const { data, loading, error, authError, create, update, remove } = useRolePermissions();
+  const { hasPermission } = useRBAC();
+  const canCreate = hasPermission('PERMISOS', 'CREATE');
+  const canUpdate = hasPermission('PERMISOS', 'UPDATE');
+  const canDelete = hasPermission('PERMISOS', 'DELETE');
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -20,12 +25,18 @@ export const RolePermissionsPage = () => {
   const [deleteTarget, setDeleteTarget] = useState<RolePermission | null>(null);
 
   const openCreate = () => {
+    if (!canCreate) {
+      return;
+    }
     setSelected(null);
     setMode('create');
     setFormOpen(true);
   };
 
   const openEdit = (item: RolePermission) => {
+    if (!canUpdate) {
+      return;
+    }
     setSelected(item);
     setMode('edit');
     setFormOpen(true);
@@ -40,6 +51,10 @@ export const RolePermissionsPage = () => {
   };
 
   const handleSubmit = async (values: CreateRolePermissionInput) => {
+    if ((mode === 'create' && !canCreate) || (mode === 'edit' && !canUpdate)) {
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (mode === 'create') {
@@ -56,7 +71,7 @@ export const RolePermissionsPage = () => {
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) {
+    if (!deleteTarget || !canDelete) {
       return;
     }
     try {
@@ -74,9 +89,11 @@ export const RolePermissionsPage = () => {
           <h2 className="text-xl font-semibold text-slate-900">RolePermissions</h2>
           <p className="text-sm text-slate-600">CRUD completo de role permissions.</p>
         </div>
-        <Button onClick={openCreate} type="button">
-          Crear relacion
-        </Button>
+        {canCreate ? (
+          <Button onClick={openCreate} type="button">
+            Crear relacion
+          </Button>
+        ) : null}
       </div>
 
       {authError || error ? (
@@ -89,8 +106,8 @@ export const RolePermissionsPage = () => {
         <RolePermissionTable
           data={data}
           loading={loading}
-          onDelete={setDeleteTarget}
-          onEdit={openEdit}
+          onDelete={canDelete ? setDeleteTarget : undefined}
+          onEdit={canUpdate ? openEdit : undefined}
         />
       </Card>
 
@@ -110,14 +127,16 @@ export const RolePermissionsPage = () => {
         />
       </Modal>
 
-      <ConfirmDialog
-        confirmLabel="Eliminar"
-        isOpen={Boolean(deleteTarget)}
-        message="Esta accion eliminara la relacion role-permission de forma permanente."
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={() => void confirmDelete()}
-        title="Confirmar eliminacion"
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          confirmLabel="Eliminar"
+          isOpen={Boolean(deleteTarget)}
+          message="Esta accion eliminara la relacion role-permission de forma permanente."
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={() => void confirmDelete()}
+          title="Confirmar eliminacion"
+        />
+      ) : null}
     </section>
   );
 };

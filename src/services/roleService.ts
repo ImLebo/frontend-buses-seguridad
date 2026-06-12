@@ -1,9 +1,12 @@
-import type { CreateRoleInput, Role, UpdateRoleInput } from '../types';
-import { apiRequest } from './api';
+import { httpClient } from '../api/httpClient';
+import { ENDPOINTS } from '../api/endpoints';
+import type { Role, CreateRoleRequest, UpdateRoleRequest, RolePermissionsRequest } from '../models';
 
 export const roleService = {
-  getAll: () => apiRequest<Role[]>('/roles'),
-  create: (input: CreateRoleInput) => apiRequest<Role>('/roles', { method: 'POST', body: input }),
-  update: (input: UpdateRoleInput) => apiRequest<Role>(`/roles/${input.id}`, { method: 'PUT', body: input }),
-  remove: (id: string) => apiRequest<void>(`/roles/${id}`, { method: 'DELETE' }),
+  getAll: () => httpClient.get<Role[]>(ENDPOINTS.ROLES.BASE),
+  create: (input: CreateRoleRequest) => httpClient.post<Role>(ENDPOINTS.ROLES.BASE, input),
+  update: (input: UpdateRoleRequest) => httpClient.put<Role>(ENDPOINTS.ROLES.BY_ID(input.id), input),
+  remove: (id: string) => httpClient.delete<void>(ENDPOINTS.ROLES.BY_ID(id)),
+  updatePermissions: (id: string, input: RolePermissionsRequest) =>
+    httpClient.put<Role>(`${ENDPOINTS.ROLES.BY_ID(id)}/permissions`, input),
 };

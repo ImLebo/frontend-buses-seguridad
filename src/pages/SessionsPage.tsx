@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { SessionForm, SessionTable } from '../components/sessions';
 import { Button, Card, ConfirmDialog, Modal } from '../components/ui';
+import { useRBAC } from '../hooks/useRBAC';
 import { useSessions } from '../hooks/useSessions';
-import type { CreateSessionInput, Session } from '../types';
+import type { CreateSessionRequest as CreateSessionInput, Session } from '../models';
 
 export const SessionsPage = () => {
   const { data, loading, error, authError, create, update, remove } = useSessions();
+  const { hasPermission } = useRBAC();
+  const canCreate = hasPermission('USUARIOS', 'CREATE');
+  const canUpdate = hasPermission('USUARIOS', 'UPDATE');
+  const canDelete = hasPermission('USUARIOS', 'DELETE');
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -14,12 +19,18 @@ export const SessionsPage = () => {
   const [deleteTarget, setDeleteTarget] = useState<Session | null>(null);
 
   const openCreate = () => {
+    if (!canCreate) {
+      return;
+    }
     setSelected(null);
     setMode('create');
     setFormOpen(true);
   };
 
   const openEdit = (item: Session) => {
+    if (!canUpdate) {
+      return;
+    }
     setSelected(item);
     setMode('edit');
     setFormOpen(true);
@@ -34,6 +45,10 @@ export const SessionsPage = () => {
   };
 
   const handleSubmit = async (values: CreateSessionInput) => {
+    if ((mode === 'create' && !canCreate) || (mode === 'edit' && !canUpdate)) {
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (mode === 'create') {
@@ -50,7 +65,7 @@ export const SessionsPage = () => {
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) {
+    if (!deleteTarget || !canDelete) {
       return;
     }
     try {
@@ -68,9 +83,11 @@ export const SessionsPage = () => {
           <h2 className="text-xl font-semibold text-slate-900">Sessions</h2>
           <p className="text-sm text-slate-600">CRUD completo de sessions.</p>
         </div>
-        <Button onClick={openCreate} type="button">
-          Crear sesion
-        </Button>
+        {canCreate ? (
+          <Button onClick={openCreate} type="button">
+            Crear sesion
+          </Button>
+        ) : null}
       </div>
 
       {authError || error ? (
@@ -80,7 +97,12 @@ export const SessionsPage = () => {
       ) : null}
 
       <Card>
-        <SessionTable data={data} loading={loading} onDelete={setDeleteTarget} onEdit={openEdit} />
+        <SessionTable
+          data={data}
+          loading={loading}
+          onDelete={canDelete ? setDeleteTarget : undefined}
+          onEdit={canUpdate ? openEdit : undefined}
+        />
       </Card>
 
       <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear sesion' : 'Editar sesion'}>
@@ -99,14 +121,16 @@ export const SessionsPage = () => {
         />
       </Modal>
 
-      <ConfirmDialog
-        confirmLabel="Eliminar"
-        isOpen={Boolean(deleteTarget)}
-        message="Esta accion eliminara la sesion de forma permanente."
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={() => void confirmDelete()}
-        title="Confirmar eliminacion"
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          confirmLabel="Eliminar"
+          isOpen={Boolean(deleteTarget)}
+          message="Esta accion eliminara la sesion de forma permanente."
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={() => void confirmDelete()}
+          title="Confirmar eliminacion"
+        />
+      ) : null}
     </section>
   );
 };

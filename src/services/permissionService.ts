@@ -1,9 +1,10 @@
-import type { CreatePermissionInput, Permission, UpdatePermissionInput } from '../types';
-import { apiRequest } from './api';
+import { httpClient } from '../api/httpClient';
+import { ENDPOINTS } from '../api/endpoints';
+import type { Permission, CreatePermissionRequest, UpdatePermissionRequest } from '../models';
 
 export const permissionService = {
-  getAll: () => apiRequest<Permission[]>('/permissions'),
-  create: (input: CreatePermissionInput) => apiRequest<Permission>('/permissions', { method: 'POST', body: input }),
-  update: (input: UpdatePermissionInput) => apiRequest<Permission>(`/permissions/${input.id}`, { method: 'PUT', body: input }),
-  remove: (id: string) => apiRequest<void>(`/permissions/${id}`, { method: 'DELETE' }),
+  getAll: () => httpClient.get<Permission[]>(ENDPOINTS.PERMISSIONS.BASE),
+  create: (input: CreatePermissionRequest) => httpClient.post<Permission>(ENDPOINTS.PERMISSIONS.BASE, input),
+  update: (input: UpdatePermissionRequest) => httpClient.put<Permission>(ENDPOINTS.PERMISSIONS.BY_ID(input.id), input),
+  remove: (id: string) => httpClient.delete<void>(ENDPOINTS.PERMISSIONS.BY_ID(id)),
 };

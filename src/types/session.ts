@@ -1,9 +1,19 @@
 export interface Session {
   id: string;
+  token?: string;
+  expiration?: string;
+  code2FA?: string;
+}
+
+export interface CreateSessionInput {
   token: string;
   expiration: string;
   code2FA: string;
 }
 
-export type CreateSessionInput = Omit<Session, 'id'>;
-export type UpdateSessionInput = Session;
+export interface UpdateSessionInput {
+  id: string;
+  token: string;
+  expiration: string;
+  code2FA: string;
+}

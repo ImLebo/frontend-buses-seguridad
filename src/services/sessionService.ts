@@ -1,9 +1,10 @@
-import type { CreateSessionInput, Session, UpdateSessionInput } from '../types';
-import { apiRequest } from './api';
+import { httpClient } from '../api/httpClient';
+import { ENDPOINTS } from '../api/endpoints';
+import type { Session, CreateSessionRequest, UpdateSessionRequest } from '../models';
 
 export const sessionService = {
-  getAll: () => apiRequest<Session[]>('/sessions'),
-  create: (input: CreateSessionInput) => apiRequest<Session>('/sessions', { method: 'POST', body: input }),
-  update: (input: UpdateSessionInput) => apiRequest<Session>(`/sessions/${input.id}`, { method: 'PUT', body: input }),
-  remove: (id: string) => apiRequest<void>(`/sessions/${id}`, { method: 'DELETE' }),
+  getAll: () => httpClient.get<Session[]>(ENDPOINTS.SESSIONS.BASE),
+  create: (input: CreateSessionRequest) => httpClient.post<Session>(ENDPOINTS.SESSIONS.BASE, input),
+  update: (input: UpdateSessionRequest) => httpClient.put<Session>(ENDPOINTS.SESSIONS.BY_ID(input.id), input),
+  remove: (id: string) => httpClient.delete<void>(ENDPOINTS.SESSIONS.BY_ID(id)),
 };

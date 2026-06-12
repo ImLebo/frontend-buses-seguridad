@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getSessionToken } from '../services/authService';
-import { apiRequest } from '../services/api';
+import { userService } from '../services/userService';
 import { useAuth } from './useAuth';
 
 export interface CurrentUserInfo {
@@ -8,17 +8,6 @@ export interface CurrentUserInfo {
   email: string;
   name: string;
   photo?: string;
-  role?: string;
-  roles?: string[];
-}
-
-interface CurrentUserResponse {
-  id: string;
-  email: string;
-  name?: string;
-  displayName?: string;
-  photo?: string;
-  photoUrl?: string;
   role?: string;
   roles?: string[];
 }
@@ -38,7 +27,7 @@ export const useCurrentUserInfo = () => {
       setError(null);
 
       try {
-        const response = await apiRequest<CurrentUserResponse>('/users/me', { method: 'GET' });
+        const response = await userService.getCurrentUser();
         setCurrentUserInfo({
           id: response.id,
           email: response.email,

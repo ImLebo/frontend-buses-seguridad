@@ -16,12 +16,14 @@ if (!SITE_KEY) {
  */
 export const getRecaptchaToken = async (action: string): Promise<string> => {
   if (!SITE_KEY) {
-    throw new Error('reCAPTCHA no está configurado. Contacta al administrador.');
+    console.warn(`reCAPTCHA no está configurado para la acción ${action}. Continuando sin token.`);
+    return '';
   }
 
   // Verificar que grecaptcha esté disponible
   if (typeof window.grecaptcha === 'undefined') {
-    throw new Error('reCAPTCHA no se cargó correctamente. Recarga la página e intenta de nuevo.');
+    console.warn(`reCAPTCHA no se cargó correctamente para la acción ${action}. Continuando sin token.`);
+    return '';
   }
 
   try {

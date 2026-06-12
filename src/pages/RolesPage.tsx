@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import { RoleForm, RoleTable } from '../components/roles';
 import { Button, Card, ConfirmDialog, Modal } from '../components/ui';
+import { useRBAC } from '../hooks/useRBAC';
 import { useRoles } from '../hooks/useRoles';
 import type { CreateRoleInput, Role } from '../types';
 
 export const RolesPage = () => {
   const { data, loading, error, authError, create, update, remove, getAll: fetchRoles } = useRoles();
+  const { hasPermission } = useRBAC();
+  const canCreate = hasPermission('ROLES', 'CREATE');
+  const canUpdate = hasPermission('ROLES', 'UPDATE');
+  const canDelete = hasPermission('ROLES', 'DELETE');
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -19,12 +24,18 @@ export const RolesPage = () => {
   }, [fetchRoles]);
 
   const openCreate = () => {
+    if (!canCreate) {
+      return;
+    }
     setSelected(null);
     setMode('create');
     setFormOpen(true);
   };
 
   const openEdit = (item: Role) => {
+    if (!canUpdate) {
+      return;
+    }
     setSelected(item);
     setMode('edit');
     setFormOpen(true);
@@ -39,6 +50,10 @@ export const RolesPage = () => {
   };
 
   const handleSubmit = async (values: CreateRoleInput) => {
+    if ((mode === 'create' && !canCreate) || (mode === 'edit' && !canUpdate)) {
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (mode === 'create') {
@@ -55,7 +70,7 @@ export const RolesPage = () => {
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) {
+    if (!deleteTarget || !canDelete) {
       return;
     }
     try {
@@ -75,9 +90,11 @@ export const RolesPage = () => {
             Gestión completa de roles con permisos granulares por módulo y acción.
           </p>
         </div>
-        <Button onClick={openCreate} type="button">
-          Crear rol
-        </Button>
+        {canCreate ? (
+          <Button onClick={openCreate} type="button">
+            Crear rol
+          </Button>
+        ) : null}
       </div>
 
       {authError || error ? (
@@ -87,7 +104,12 @@ export const RolesPage = () => {
       ) : null}
 
       <Card>
-        <RoleTable data={data} loading={loading} onDelete={setDeleteTarget} onEdit={openEdit} />
+        <RoleTable
+          data={data}
+          loading={loading}
+          onDelete={canDelete ? setDeleteTarget : undefined}
+          onEdit={canUpdate ? openEdit : undefined}
+        />
       </Card>
 
       <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear rol' : 'Editar rol'} size="md">
@@ -106,18 +128,20 @@ export const RolesPage = () => {
         />
       </Modal>
 
-      <ConfirmDialog
-        confirmLabel="Eliminar"
-        isOpen={Boolean(deleteTarget)}
-        message={
-          deleteTarget
-            ? `Esta acción eliminará el rol "${deleteTarget.name}" de forma permanente.`
-            : 'Esta acción eliminará el rol de forma permanente.'
-        }
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={() => void confirmDelete()}
-        title="Confirmar eliminación"
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          confirmLabel="Eliminar"
+          isOpen={Boolean(deleteTarget)}
+          message={
+            deleteTarget
+              ? `Esta acción eliminará el rol "${deleteTarget.name}" de forma permanente.`
+              : 'Esta acción eliminará el rol de forma permanente.'
+          }
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={() => void confirmDelete()}
+          title="Confirmar eliminación"
+        />
+      ) : null}
     </section>
   );
 };

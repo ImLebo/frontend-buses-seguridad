@@ -55,7 +55,9 @@ export const LoginPage = () => {
         return;
       }
 
-      saveSessionToken(response.token);
+      if (response.token) {
+        saveSessionToken(response.token);
+      }
       saveSessionProvider('password');
       navigate('/app', { replace: true });
     } catch (caughtError) {

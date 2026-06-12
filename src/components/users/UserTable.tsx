@@ -4,8 +4,8 @@ import type { User } from '../../types';
 interface UserTableProps {
   data: User[];
   loading: boolean;
-  onEdit: (item: User) => void;
-  onDelete: (item: User) => void;
+  onEdit?: (item: User) => void;
+  onDelete?: (item: User) => void;
   onAssignRoles?: (item: User) => void;
 }
 
@@ -39,18 +39,22 @@ export const UserTable = ({ data, loading, onEdit, onDelete, onAssignRoles }: Us
               </span>
             </Button>
           )}
-          <Button onClick={() => onEdit(user)} size="sm" type="button" variant="ghost">
-            <span className="inline-flex items-center gap-1.5">
-              <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M14.69 2.86a1.5 1.5 0 0 1 2.12 2.12l-8.48 8.49-3.3.7.7-3.3 8.48-8.5Z" /></svg>
-              Editar
-            </span>
-          </Button>
-          <Button onClick={() => onDelete(user)} size="sm" type="button" variant="danger">
-            <span className="inline-flex items-center gap-1.5">
-              <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 0 0-1 1v1H4.5a.5.5 0 0 0 0 1h.54l.76 10.18A2 2 0 0 0 7.8 17h4.4a2 2 0 0 0 1.99-1.82L14.95 5h.55a.5.5 0 1 0 0-1H13V3a1 1 0 0 0-1-1H8Zm1 2V3h2v1H9Z" /></svg>
-              Eliminar
-            </span>
-          </Button>
+          {onEdit ? (
+            <Button onClick={() => onEdit(user)} size="sm" type="button" variant="ghost">
+              <span className="inline-flex items-center gap-1.5">
+                <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M14.69 2.86a1.5 1.5 0 0 1 2.12 2.12l-8.48 8.49-3.3.7.7-3.3 8.48-8.5Z" /></svg>
+                Editar
+              </span>
+            </Button>
+          ) : null}
+          {onDelete ? (
+            <Button onClick={() => onDelete(user)} size="sm" type="button" variant="danger">
+              <span className="inline-flex items-center gap-1.5">
+                <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M8 2a1 1 0 0 0-1 1v1H4.5a.5.5 0 0 0 0 1h.54l.76 10.18A2 2 0 0 0 7.8 17h4.4a2 2 0 0 0 1.99-1.82L14.95 5h.55a.5.5 0 1 0 0-1H13V3a1 1 0 0 0-1-1H8Zm1 2V3h2v1H9Z" /></svg>
+                Eliminar
+              </span>
+            </Button>
+          ) : null}
         </div>
       ),
     },

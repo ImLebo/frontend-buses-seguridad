@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert, Button, Card, ConfirmDialog, Input, Modal } from '../components/ui';
 import { UserForm } from '../components/users/UserForm';
 import { UserTable } from '../components/users/UserTable';
+import { useRBAC } from '../hooks/useRBAC';
 import { useRoles } from '../hooks/useRoles';
 import { useUsers, useUserSearch } from '../hooks/useUsers';
 import { userService } from '../services/userService';
@@ -11,6 +12,10 @@ export const UsersPage = () => {
   // CRUD básico
   const { data, loading, error, authError, create, update, remove, clearError } = useUsers();
   const { data: roles } = useRoles();
+  const { hasPermission } = useRBAC();
+  const canCreate = hasPermission('USUARIOS', 'CREATE');
+  const canUpdate = hasPermission('USUARIOS', 'UPDATE');
+  const canDelete = hasPermission('USUARIOS', 'DELETE');
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -56,6 +61,10 @@ export const UsersPage = () => {
   // ... métodos CRUD existentes ...
 
   const openCreate = () => {
+    if (!canCreate) {
+      return;
+    }
+
     clearError();
     setSelected(null);
     setMode('create');
@@ -63,6 +72,10 @@ export const UsersPage = () => {
   };
 
   const openEdit = (item: User) => {
+    if (!canUpdate) {
+      return;
+    }
+
     clearError();
     setSelected(item);
     setMode('edit');
@@ -79,6 +92,10 @@ export const UsersPage = () => {
   };
 
   const handleSubmit = async (values: CreateUserInput) => {
+    if ((mode === 'create' && !canCreate) || (mode === 'edit' && !canUpdate)) {
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (mode === 'create') {
@@ -95,7 +112,7 @@ export const UsersPage = () => {
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) {
+    if (!deleteTarget || !canDelete) {
       return;
     }
     try {
@@ -108,12 +125,21 @@ export const UsersPage = () => {
 
   // Nuevos métodos para gestión de roles
   const handleOpenRoleModal = (user: User) => {
+    if (!canUpdate) {
+      return;
+    }
+
     setSelectedUserForRoles(user);
     setRoleError(null);
     setIsRoleModalOpen(true);
   };
 
   const handleSaveRoles = async () => {
+    if (!canUpdate) {
+      setRoleError('No estas autorizado para actualizar roles de usuarios');
+      return;
+    }
+
     if (!selectedUserForRoles) {
       setRoleError('Error: Usuario no seleccionado');
       return;
@@ -180,9 +206,11 @@ export const UsersPage = () => {
           <h2 className="text-xl font-semibold text-slate-900">Usuarios</h2>
           <p className="text-sm text-slate-600">Gestión de usuarios y asignación de roles.</p>
         </div>
-        <Button onClick={openCreate} type="button">
-          Crear usuario
-        </Button>
+        {canCreate ? (
+          <Button onClick={openCreate} type="button">
+            Crear usuario
+          </Button>
+        ) : null}
       </div>
 
       {authError && (
@@ -218,9 +246,9 @@ export const UsersPage = () => {
           <UserTable
             data={displayUsers}
             loading={loading}
-            onDelete={setDeleteTarget}
-            onEdit={openEdit}
-            onAssignRoles={handleOpenRoleModal}
+            onDelete={canDelete ? setDeleteTarget : undefined}
+            onEdit={canUpdate ? openEdit : undefined}
+            onAssignRoles={canUpdate ? handleOpenRoleModal : undefined}
           />
         </div>
       </Card>
@@ -257,7 +285,7 @@ export const UsersPage = () => {
         />
       </Modal>
 
-      <Modal isOpen={isRoleModalOpen} onClose={() => setIsRoleModalOpen(false)} title="Asignar Roles" size="md">
+      <Modal isOpen={isRoleModalOpen && canUpdate} onClose={() => setIsRoleModalOpen(false)} title="Asignar Roles" size="md">
         {selectedUserForRoles && (
           <div className="space-y-4 max-h-[calc(90vh-150px)] overflow-y-auto">
             {roleError && (
@@ -324,14 +352,16 @@ export const UsersPage = () => {
         )}
       </Modal>
 
-      <ConfirmDialog
-        confirmLabel="Eliminar"
-        isOpen={Boolean(deleteTarget)}
-        message="Esta acción eliminará el usuario de forma permanente."
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={() => void confirmDelete()}
-        title="Confirmar eliminación"
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          confirmLabel="Eliminar"
+          isOpen={Boolean(deleteTarget)}
+          message="Esta acción eliminará el usuario de forma permanente."
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={() => void confirmDelete()}
+          title="Confirmar eliminación"
+        />
+      ) : null}
     </section>
   );
 };

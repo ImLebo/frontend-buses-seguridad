@@ -10,7 +10,7 @@ export interface NavItem {
 }
 
 interface SidebarProps {
-  items: NavItem[];
+  items?: NavItem[];
   isOpen?: boolean;
   onClose?: () => void;
 }
@@ -80,7 +80,7 @@ export const Sidebar = ({ items, isOpen = false, onClose }: SidebarProps) => {
     { id: 'sessions', label: 'Sesiones', path: '/app/sessions', icon: 'Clock' },
   ];
 
-  const navItems = items.length > 0 ? items : defaultItems;
+  const navItems = items ?? defaultItems;
 
   return (
     <>

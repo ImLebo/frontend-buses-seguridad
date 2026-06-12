@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { PermissionForm, PermissionTable } from '../components/permissions';
 import { Button, Card, ConfirmDialog, Modal } from '../components/ui';
+import { useRBAC } from '../hooks/useRBAC';
 import { usePermissions } from '../hooks/usePermissions';
 import type { CreatePermissionInput, Permission } from '../types';
 
 export const PermissionsPage = () => {
   const { data, loading, error, authError, create, update, remove } = usePermissions();
+  const { hasPermission } = useRBAC();
+  const canCreate = hasPermission('PERMISOS', 'CREATE');
+  const canUpdate = hasPermission('PERMISOS', 'UPDATE');
+  const canDelete = hasPermission('PERMISOS', 'DELETE');
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -14,12 +19,18 @@ export const PermissionsPage = () => {
   const [deleteTarget, setDeleteTarget] = useState<Permission | null>(null);
 
   const openCreate = () => {
+    if (!canCreate) {
+      return;
+    }
     setSelected(null);
     setMode('create');
     setFormOpen(true);
   };
 
   const openEdit = (item: Permission) => {
+    if (!canUpdate) {
+      return;
+    }
     setSelected(item);
     setMode('edit');
     setFormOpen(true);
@@ -34,6 +45,10 @@ export const PermissionsPage = () => {
   };
 
   const handleSubmit = async (values: CreatePermissionInput) => {
+    if ((mode === 'create' && !canCreate) || (mode === 'edit' && !canUpdate)) {
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (mode === 'create') {
@@ -50,7 +65,7 @@ export const PermissionsPage = () => {
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) {
+    if (!deleteTarget || !canDelete) {
       return;
     }
     try {
@@ -68,9 +83,11 @@ export const PermissionsPage = () => {
           <h2 className="text-xl font-semibold text-slate-900">Permissions</h2>
           <p className="text-sm text-slate-600">CRUD completo de permissions.</p>
         </div>
-        <Button onClick={openCreate} type="button">
-          Crear permiso
-        </Button>
+        {canCreate ? (
+          <Button onClick={openCreate} type="button">
+            Crear permiso
+          </Button>
+        ) : null}
       </div>
 
       {authError || error ? (
@@ -80,7 +97,12 @@ export const PermissionsPage = () => {
       ) : null}
 
       <Card>
-        <PermissionTable data={data} loading={loading} onDelete={setDeleteTarget} onEdit={openEdit} />
+        <PermissionTable
+          data={data}
+          loading={loading}
+          onDelete={canDelete ? setDeleteTarget : undefined}
+          onEdit={canUpdate ? openEdit : undefined}
+        />
       </Card>
 
       <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear permiso' : 'Editar permiso'}>
@@ -99,14 +121,16 @@ export const PermissionsPage = () => {
         />
       </Modal>
 
-      <ConfirmDialog
-        confirmLabel="Eliminar"
-        isOpen={Boolean(deleteTarget)}
-        message="Esta accion eliminara el permiso de forma permanente."
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={() => void confirmDelete()}
-        title="Confirmar eliminacion"
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          confirmLabel="Eliminar"
+          isOpen={Boolean(deleteTarget)}
+          message="Esta accion eliminara el permiso de forma permanente."
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={() => void confirmDelete()}
+          title="Confirmar eliminacion"
+        />
+      ) : null}
     </section>
   );
 };

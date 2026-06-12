@@ -1,7 +1,7 @@
-import type { CreateProfileInput, Profile, UpdateProfileInput } from '../types';
+import type { CreateProfileRequest, Profile, UpdateProfileRequest } from '../models';
 import { profileService } from '../services/profileService';
 import { useCrudResource } from './useCrudResource';
 
 export const useProfiles = () => {
-  return useCrudResource<Profile, CreateProfileInput, UpdateProfileInput>(profileService);
+  return useCrudResource<Profile, CreateProfileRequest, UpdateProfileRequest>(profileService);
 };

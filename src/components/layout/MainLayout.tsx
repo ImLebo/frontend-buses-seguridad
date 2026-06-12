@@ -1,5 +1,6 @@
-import { useState, type PropsWithChildren } from 'react';
+import { useMemo, useState, type PropsWithChildren } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { useRBAC } from '../../hooks/useRBAC';
 import { useCurrentUserInfo } from '../../hooks/useCurrentUserInfo';
 import { getSessionProvider } from '../../services/authService';
 import { Navbar } from './Navbar';
@@ -10,16 +11,11 @@ interface MainLayoutProps extends PropsWithChildren {
   onLogout?: () => void;
 }
 
-const defaultItems: NavItem[] = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'users', label: 'Usuarios', active: true },
-  { id: 'settings', label: 'Configuracion' },
-];
-
-export const MainLayout = ({ children, navItems = defaultItems, onLogout }: MainLayoutProps) => {
+export const MainLayout = ({ children, navItems, onLogout }: MainLayoutProps) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useAuth();
   const { currentUserInfo } = useCurrentUserInfo();
+  const { hasPermission } = useRBAC();
 
   // Usar currentUserInfo si está disponible, si no, usar datos de Firebase directamente
   const displayName = currentUserInfo?.name || user?.displayName || 'Usuario';
@@ -42,10 +38,35 @@ export const MainLayout = ({ children, navItems = defaultItems, onLogout }: Main
     },
   });
 
+  const effectiveNavItems = useMemo<NavItem[]>(() => {
+    if (Array.isArray(navItems)) {
+      return navItems;
+    }
+
+    const nextItems: NavItem[] = [];
+
+    if (hasPermission('USUARIOS', 'READ')) {
+      nextItems.push({ id: 'users', label: 'Usuarios', path: '/app/users', icon: 'Users' });
+      nextItems.push({ id: 'profiles', label: 'Perfiles', path: '/app/profiles', icon: 'UserCheck' });
+      nextItems.push({ id: 'sessions', label: 'Sesiones', path: '/app/sessions', icon: 'Clock' });
+    }
+
+    if (hasPermission('ROLES', 'READ')) {
+      nextItems.push({ id: 'roles', label: 'Roles', path: '/app/roles', icon: 'Shield' });
+    }
+
+    if (hasPermission('PERMISOS', 'READ')) {
+      nextItems.push({ id: 'permissions', label: 'Permisos', path: '/app/permissions', icon: 'Key' });
+      nextItems.push({ id: 'role-permissions', label: 'Rol-Permisos', path: '/app/role-permissions', icon: 'Key' });
+    }
+
+    return nextItems;
+  }, [hasPermission, navItems]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="flex min-h-screen">
-        <Sidebar isOpen={isSidebarOpen} items={navItems} onClose={() => setSidebarOpen(false)} />
+        <Sidebar isOpen={isSidebarOpen} items={effectiveNavItems} onClose={() => setSidebarOpen(false)} />
 
         <div className="flex min-w-0 flex-1 flex-col">
           <Navbar

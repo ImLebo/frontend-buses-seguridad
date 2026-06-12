@@ -1,9 +1,10 @@
-import type { CreateProfileInput, Profile, UpdateProfileInput } from '../types';
-import { apiRequest } from './api';
+import { httpClient } from '../api/httpClient';
+import { ENDPOINTS } from '../api/endpoints';
+import type { Profile, CreateProfileRequest, UpdateProfileRequest } from '../models';
 
 export const profileService = {
-  getAll: () => apiRequest<Profile[]>('/profiles'),
-  create: (input: CreateProfileInput) => apiRequest<Profile>('/profiles', { method: 'POST', body: input }),
-  update: (input: UpdateProfileInput) => apiRequest<Profile>(`/profiles/${input.id}`, { method: 'PUT', body: input }),
-  remove: (id: string) => apiRequest<void>(`/profiles/${id}`, { method: 'DELETE' }),
+  getAll: () => httpClient.get<Profile[]>(ENDPOINTS.PROFILES.BASE),
+  create: (input: CreateProfileRequest) => httpClient.post<Profile>(ENDPOINTS.PROFILES.BASE, input),
+  update: (input: UpdateProfileRequest) => httpClient.put<Profile>(ENDPOINTS.PROFILES.BY_ID(input.id), input),
+  remove: (id: string) => httpClient.delete<void>(ENDPOINTS.PROFILES.BY_ID(id)),
 };

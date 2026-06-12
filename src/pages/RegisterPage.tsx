@@ -36,7 +36,9 @@ export const RegisterPage = () => {
       // Pero wait, en register, si no requiere 2FA, debería tener token
       // En el código de login: saveSessionToken(response.token);
       // Así que aquí igual
-      saveSessionToken(response.token);
+      if (response.token) {
+        saveSessionToken(response.token);
+      }
       navigate('/app', { replace: true });
     } catch (caughtError) {
       if (isApiError(caughtError)) {

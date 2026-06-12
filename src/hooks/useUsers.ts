@@ -1,10 +1,10 @@
-import type { CreateUserInput, UpdateUserInput, User } from '../types';
+import type { CreateUserRequest, UpdateUserRequest, User } from '../models';
 import { userService } from '../services/userService';
 import { useCrudResource } from './useCrudResource';
 import { useEffect, useState, useCallback } from 'react';
 
 export const useUsers = () => {
-  return useCrudResource<User, CreateUserInput, UpdateUserInput>(userService);
+  return useCrudResource<User, CreateUserRequest, UpdateUserRequest>(userService);
 };
 
 export const useUserSearch = (query: string) => {
@@ -38,4 +38,3 @@ export const useUserSearch = (query: string) => {
 
   return { results, loading, error, search };
 };
-

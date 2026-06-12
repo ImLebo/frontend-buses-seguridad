@@ -1,7 +1,7 @@
-import type { CreateRoleInput, Role, UpdateRoleInput } from '../types';
+import type { CreateRoleRequest, Role, UpdateRoleRequest } from '../models';
 import { roleService } from '../services/roleService';
 import { useCrudResource } from './useCrudResource';
 
 export const useRoles = () => {
-  return useCrudResource<Role, CreateRoleInput, UpdateRoleInput>(roleService);
+  return useCrudResource<Role, CreateRoleRequest, UpdateRoleRequest>(roleService);
 };

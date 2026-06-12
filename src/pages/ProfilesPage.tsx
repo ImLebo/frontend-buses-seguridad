@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { ProfileForm, ProfileTable } from '../components/profiles';
 import { Button, Card, ConfirmDialog, Modal } from '../components/ui';
+import { useRBAC } from '../hooks/useRBAC';
 import { useProfiles } from '../hooks/useProfiles';
 import type { CreateProfileInput, Profile } from '../types';
 
 export const ProfilesPage = () => {
   const { data, loading, error, authError, create, update, remove } = useProfiles();
+  const { hasPermission } = useRBAC();
+  const canCreate = hasPermission('USUARIOS', 'CREATE');
+  const canUpdate = hasPermission('USUARIOS', 'UPDATE');
+  const canDelete = hasPermission('USUARIOS', 'DELETE');
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -14,12 +19,18 @@ export const ProfilesPage = () => {
   const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
 
   const openCreate = () => {
+    if (!canCreate) {
+      return;
+    }
     setSelected(null);
     setMode('create');
     setFormOpen(true);
   };
 
   const openEdit = (item: Profile) => {
+    if (!canUpdate) {
+      return;
+    }
     setSelected(item);
     setMode('edit');
     setFormOpen(true);
@@ -34,6 +45,10 @@ export const ProfilesPage = () => {
   };
 
   const handleSubmit = async (values: CreateProfileInput) => {
+    if ((mode === 'create' && !canCreate) || (mode === 'edit' && !canUpdate)) {
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (mode === 'create') {
@@ -50,7 +65,7 @@ export const ProfilesPage = () => {
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) {
+    if (!deleteTarget || !canDelete) {
       return;
     }
     try {
@@ -68,9 +83,11 @@ export const ProfilesPage = () => {
           <h2 className="text-xl font-semibold text-slate-900">Profiles</h2>
           <p className="text-sm text-slate-600">CRUD completo de profiles.</p>
         </div>
-        <Button onClick={openCreate} type="button">
-          Crear profile
-        </Button>
+        {canCreate ? (
+          <Button onClick={openCreate} type="button">
+            Crear profile
+          </Button>
+        ) : null}
       </div>
 
       {authError || error ? (
@@ -80,7 +97,12 @@ export const ProfilesPage = () => {
       ) : null}
 
       <Card>
-        <ProfileTable data={data} loading={loading} onDelete={setDeleteTarget} onEdit={openEdit} />
+        <ProfileTable
+          data={data}
+          loading={loading}
+          onDelete={canDelete ? setDeleteTarget : undefined}
+          onEdit={canUpdate ? openEdit : undefined}
+        />
       </Card>
 
       <Modal isOpen={isFormOpen} onClose={closeForm} title={mode === 'create' ? 'Crear profile' : 'Editar profile'}>
@@ -99,14 +121,16 @@ export const ProfilesPage = () => {
         />
       </Modal>
 
-      <ConfirmDialog
-        confirmLabel="Eliminar"
-        isOpen={Boolean(deleteTarget)}
-        message="Esta accion eliminara el profile de forma permanente."
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={() => void confirmDelete()}
-        title="Confirmar eliminacion"
-      />
+      {canDelete ? (
+        <ConfirmDialog
+          confirmLabel="Eliminar"
+          isOpen={Boolean(deleteTarget)}
+          message="Esta accion eliminara el profile de forma permanente."
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={() => void confirmDelete()}
+          title="Confirmar eliminacion"
+        />
+      ) : null}
     </section>
   );
 };
