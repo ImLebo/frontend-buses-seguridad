@@ -7,7 +7,11 @@ import { RolePermissionsPage } from './RolePermissionsPage';
 import { UsersPage } from './UsersPage';
 import { ProfilesPage } from './ProfilesPage';
 import { SessionsPage } from './SessionsPage';
+import { CitizenRoutesPage } from './CitizenRoutesPage';
+import { CitizenStopsPage } from './CitizenStopsPage';
+import { CitizenBoardingPage } from './CitizenBoardingPage';
 import { useRBAC } from '../hooks/useRBAC';
+import { useCurrentUserInfo } from '../hooks/useCurrentUserInfo';
 import { clearSessionToken } from '../services/authService';
 
 type PermissionGateProps = {
@@ -41,9 +45,28 @@ const UnauthorizedPage = () => {
 
 export const PrivateAppPage = () => {
   const navigate = useNavigate();
-  const { hasPermission } = useRBAC();
+  const { hasPermission, loading: rbacLoading } = useRBAC();
+  const { currentUserInfo, loading: userLoading } = useCurrentUserInfo();
 
   const getDefaultAuthorizedPath = () => {
+    // 1) First check by role for direct redirection
+    const role = currentUserInfo?.role || currentUserInfo?.roles?.[0];
+    if (role) {
+      const normalizedRole = role.trim().toLowerCase();
+      if (normalizedRole === 'administrador sistema' || normalizedRole === 'admin') {
+        return '/app/users';
+      }
+      if (
+        normalizedRole === 'ciudadano' ||
+        normalizedRole === 'conductor' ||
+        normalizedRole === 'supervisor' ||
+        normalizedRole === 'administrador empresa'
+      ) {
+        return '/app/citizen-routes';
+      }
+    }
+
+    // 2) Fallback to permission checks
     if (hasPermission('USUARIOS', 'READ')) {
       return '/app/users';
     }
@@ -53,6 +76,9 @@ export const PrivateAppPage = () => {
     if (hasPermission('PERMISOS', 'READ')) {
       return '/app/permissions';
     }
+    if (hasPermission('RUTAS', 'READ')) {
+      return '/app/citizen-routes';
+    }
 
     return '/app/unauthorized';
   };
@@ -61,6 +87,10 @@ export const PrivateAppPage = () => {
     clearSessionToken();
     navigate('/login', { replace: true });
   };
+
+  if (rbacLoading || userLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Cargando aplicación...</div>;
+  }
 
   return (
     <MainLayout onLogout={handleLogout}>
@@ -72,6 +102,9 @@ export const PrivateAppPage = () => {
         <Route path="/users" element={<PermissionGate module="USUARIOS" action="READ"><UsersPage /></PermissionGate>} />
         <Route path="/profiles" element={<PermissionGate module="USUARIOS" action="READ"><ProfilesPage /></PermissionGate>} />
         <Route path="/sessions" element={<PermissionGate module="USUARIOS" action="READ"><SessionsPage /></PermissionGate>} />
+        <Route path="/citizen-routes" element={<PermissionGate module="RUTAS" action="READ"><CitizenRoutesPage /></PermissionGate>} />
+        <Route path="/citizen-stops" element={<PermissionGate module="RUTAS" action="READ"><CitizenStopsPage /></PermissionGate>} />
+        <Route path="/citizen-boarding" element={<PermissionGate module="BOLETOS" action="CREATE"><CitizenBoardingPage /></PermissionGate>} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="*" element={<Navigate to={getDefaultAuthorizedPath()} replace />} />
       </Routes>

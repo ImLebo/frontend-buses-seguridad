@@ -60,6 +60,15 @@ export const MainLayout = ({ children, navItems, onLogout }: MainLayoutProps) =>
       nextItems.push({ id: 'role-permissions', label: 'Rol-Permisos', path: '/app/role-permissions', icon: 'Key' });
     }
 
+    if (hasPermission('RUTAS', 'READ')) {
+      nextItems.push({ id: 'citizen-routes', label: 'Rutas Disponibles', path: '/app/citizen-routes', icon: 'Map' });
+      nextItems.push({ id: 'citizen-stops', label: 'Paraderos Cercanos', path: '/app/citizen-stops', icon: 'MapPin' });
+    }
+
+    if (hasPermission('BOLETOS', 'CREATE')) {
+      nextItems.push({ id: 'citizen-boarding', label: 'Abordar Autobús', path: '/app/citizen-boarding', icon: 'CreditCard' });
+    }
+
     return nextItems;
   }, [hasPermission, navItems]);
 

@@ -24,4 +24,7 @@ export * from './useProgramacion';
 export * from './useRecarga';
 export * from './useReportes';
 export * from './useRuta';
+export * from './useRutaDisponible';
+export * from './useParaderosCercanos';
 export * from './useTurno';
+export * from './useBoletoAbordar';
