@@ -7,6 +7,8 @@ export interface Turno extends BaseBusinessEntity {
   fecha?: string;
   hora_inicio?: string;
   hora_fin?: string;
+  estado?: string;
+  bus?: any;
 }
 
 export type CreateTurnoDto = Omit<Turno, 'id' | 'turno_id'>;

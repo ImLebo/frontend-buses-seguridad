@@ -8,6 +8,7 @@ import { RegisterTwoFactorPage } from '../pages/RegisterTwoFactorPage';
 import { GoogleCallbackPage } from '../pages/GoogleCallbackPage';
 import { GitHubCallbackPage } from '../pages/GitHubCallbackPage';
 import { MicrosoftCallbackPage } from '../pages/MicrosoftCallbackPage';
+import { EpaycoMockCheckoutPage } from '../pages/EpaycoMockCheckoutPage';
 
 export const PublicRoutes = (
   <>
@@ -20,5 +21,6 @@ export const PublicRoutes = (
     <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
     <Route path="/auth/github/callback" element={<GitHubCallbackPage />} />
     <Route path="/auth/microsoft/callback" element={<MicrosoftCallbackPage />} />
+    <Route path="/epayco-checkout" element={<EpaycoMockCheckoutPage />} />
   </>
 );

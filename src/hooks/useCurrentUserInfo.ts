@@ -10,6 +10,7 @@ export interface CurrentUserInfo {
   photo?: string;
   role?: string;
   roles?: string[];
+  empresaId?: number;
 }
 
 export const useCurrentUserInfo = () => {

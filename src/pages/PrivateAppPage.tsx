@@ -10,6 +10,15 @@ import { SessionsPage } from './SessionsPage';
 import { CitizenRoutesPage } from './CitizenRoutesPage';
 import { CitizenStopsPage } from './CitizenStopsPage';
 import { CitizenBoardingPage } from './CitizenBoardingPage';
+import { CitizenTripHistoryPage } from './CitizenTripHistoryPage';
+import { DriverShiftPage } from './DriverShiftPage';
+import { AdminRouteCreatePage } from './AdminRouteCreatePage';
+import { AdminStopCreatePage } from './AdminStopCreatePage';
+import { AdminScheduleCreatePage } from './AdminScheduleCreatePage';
+import { CompanyBusCreatePage } from './CompanyBusCreatePage';
+import { CitizenRechargePage } from './CitizenRechargePage';
+import { AdminRevenueReportPage } from './AdminRevenueReportPage';
+import { AdminAgeDemographicsPage } from './AdminAgeDemographicsPage';
 import { useRBAC } from '../hooks/useRBAC';
 import { useCurrentUserInfo } from '../hooks/useCurrentUserInfo';
 import { clearSessionToken } from '../services/authService';
@@ -102,9 +111,18 @@ export const PrivateAppPage = () => {
         <Route path="/users" element={<PermissionGate module="USUARIOS" action="READ"><UsersPage /></PermissionGate>} />
         <Route path="/profiles" element={<PermissionGate module="USUARIOS" action="READ"><ProfilesPage /></PermissionGate>} />
         <Route path="/sessions" element={<PermissionGate module="USUARIOS" action="READ"><SessionsPage /></PermissionGate>} />
+        <Route path="/admin-routes/new" element={<PermissionGate module="RUTAS" action="CREATE"><AdminRouteCreatePage /></PermissionGate>} />
+        <Route path="/admin-stops/new" element={<PermissionGate module="RUTAS" action="CREATE"><AdminStopCreatePage /></PermissionGate>} />
+        <Route path="/company-buses/new" element={<PermissionGate module="BUSES" action="CREATE"><CompanyBusCreatePage /></PermissionGate>} />
+        <Route path="/admin-schedules/new" element={<PermissionGate module="PROGRAMACION" action="CREATE"><AdminScheduleCreatePage /></PermissionGate>} />
         <Route path="/citizen-routes" element={<PermissionGate module="RUTAS" action="READ"><CitizenRoutesPage /></PermissionGate>} />
         <Route path="/citizen-stops" element={<PermissionGate module="RUTAS" action="READ"><CitizenStopsPage /></PermissionGate>} />
         <Route path="/citizen-boarding" element={<PermissionGate module="BOLETOS" action="CREATE"><CitizenBoardingPage /></PermissionGate>} />
+        <Route path="/citizen-trips" element={<PermissionGate module="BOLETOS" action="READ"><CitizenTripHistoryPage /></PermissionGate>} />
+        <Route path="/citizen-recharge" element={<PermissionGate module="BOLETOS" action="CREATE"><CitizenRechargePage /></PermissionGate>} />
+        <Route path="/admin-revenue" element={<PermissionGate module="REPORTES" action="READ"><AdminRevenueReportPage /></PermissionGate>} />
+        <Route path="/admin-demographics" element={<PermissionGate module="REPORTES" action="READ"><AdminAgeDemographicsPage /></PermissionGate>} />
+        <Route path="/driver-shift" element={<PermissionGate module="TURNOS" action="UPDATE"><DriverShiftPage /></PermissionGate>} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="*" element={<Navigate to={getDefaultAuthorizedPath()} replace />} />
       </Routes>

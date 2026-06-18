@@ -51,6 +51,19 @@ export const MainLayout = ({ children, navItems, onLogout }: MainLayoutProps) =>
       nextItems.push({ id: 'sessions', label: 'Sesiones', path: '/app/sessions', icon: 'Clock' });
     }
 
+    if (hasPermission('RUTAS', 'CREATE')) {
+      nextItems.push({ id: 'admin-routes-new', label: 'Crear Ruta', path: '/app/admin-routes/new', icon: 'Map' });
+      nextItems.push({ id: 'admin-stops-new', label: 'Crear Paradero', path: '/app/admin-stops/new', icon: 'MapPin' });
+    }
+
+    if (hasPermission('PROGRAMACION', 'CREATE')) {
+      nextItems.push({ id: 'admin-schedules-new', label: 'Programar Ruta', path: '/app/admin-schedules/new', icon: 'Calendar' });
+    }
+
+    if (hasPermission('BUSES', 'CREATE')) {
+      nextItems.push({ id: 'company-buses-new', label: 'Registrar Bus', path: '/app/company-buses/new', icon: 'Truck' });
+    }
+
     if (hasPermission('ROLES', 'READ')) {
       nextItems.push({ id: 'roles', label: 'Roles', path: '/app/roles', icon: 'Shield' });
     }
@@ -67,6 +80,23 @@ export const MainLayout = ({ children, navItems, onLogout }: MainLayoutProps) =>
 
     if (hasPermission('BOLETOS', 'CREATE')) {
       nextItems.push({ id: 'citizen-boarding', label: 'Abordar Autobús', path: '/app/citizen-boarding', icon: 'CreditCard' });
+    }
+
+    if (hasPermission('BOLETOS', 'READ')) {
+      nextItems.push({ id: 'citizen-history', label: 'Historial de Viajes', path: '/app/citizen-trips', icon: 'Clock' });
+    }
+
+    if (hasPermission('BOLETOS', 'CREATE')) {
+      nextItems.push({ id: 'citizen-recharge', label: 'Recargar Tarjeta', path: '/app/citizen-recharge', icon: 'CreditCard' });
+    }
+
+    if (hasPermission('TURNOS', 'UPDATE')) {
+      nextItems.push({ id: 'driver-shift', label: 'Mi Turno', path: '/app/driver-shift', icon: 'Truck' });
+    }
+
+    if (hasPermission('REPORTES', 'READ')) {
+      nextItems.push({ id: 'admin-revenue', label: 'Reporte Ingresos', path: '/app/admin-revenue', icon: 'BarChart' });
+      nextItems.push({ id: 'admin-demographics', label: 'Demografía Pasajeros', path: '/app/admin-demographics', icon: 'Users' });
     }
 
     return nextItems;
